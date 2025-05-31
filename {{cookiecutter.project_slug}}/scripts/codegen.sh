@@ -20,7 +20,7 @@ if [ ! -f "$STRUCT_FILE" ]; then
 fi
 
 # Change to codegen directory relative to current dir
-CODEGEN_DIR="$CURRENT_DIR/_codegen"
+CODEGEN_DIR="$CURRENT_DIR/codegen"
 
 if ! cd "$CODEGEN_DIR"; then
   echo "❌ Failed to enter codegen directory at $CODEGEN_DIR"

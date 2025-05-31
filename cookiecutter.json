@@ -1,3 +1,6 @@
 {
-  "project_slug": "your rust webapp project name"
+  "project_slug": "your rust webapp project name",
+  "_copy_without_render": [
+    "codegen/**"
+  ]
 }
