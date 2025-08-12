@@ -1,0 +1,30 @@
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/permission.rs:1:41 unused imports: `CreatePermission`, `Permission`, and `UpdatePermission`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/permission.rs:2:5 unused import: `crate::domain::repositories::repository::ResultPaging`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/role.rs:1:35 unused imports: `CreateRole`, `Role`, and `UpdateRole`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/role.rs:2:5 unused import: `crate::domain::repositories::repository::ResultPaging`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/role_permission.rs:1:46 unused imports: `CreateRolePermission` and `RolePermission`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/role_permission.rs:2:5 unused import: `crate::domain::repositories::repository::ResultPaging`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/token.rs:2:36 unused imports: `CreateToken`, `Token`, and `UpdateToken`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/token.rs:3:5 unused import: `crate::domain::repositories::repository::ResultPaging`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/middlewares/jwt_extractor.rs:6:5 unused import: `http::header::AUTHORIZATION`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/middlewares/jwt_extractor.rs:10:5 unused import: `chrono::Utc`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/middlewares/jwt_extractor.rs:13:13 unused imports: `ApiError`, `permission_errors::PermissionError`, and `token_errors::TokenError`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/error.rs:1:49 unused import: `HttpResponseBuilder`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:1:5 unused import: `actix_web::http::StatusCode`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:2:17 unused import: `HttpResponse`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:3:5 unused import: `serde_json::json`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:6:5 unused import: `super::token_errors::TokenError`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/models/token.rs:3:24 unused import: `Duration`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/services/jwt_extractor.rs:1:5 unused import: `std::sync::Arc`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/services/jwt_extractor.rs:8:13 unused imports: `role::RoleService` and `token::TokenService`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/services/token.rs:6:47 unused import: `QueryParams`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/jwt_extractor.rs:1:5 unused import: `std::sync::Arc`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/jwt_extractor.rs:3:67 unused import: `web`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:2:31 unused import: `ResponseError`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/jwt_extractor.rs:9:71 unused import: `token::TokenService`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/jwt_extractor.rs:9:52 unused import: `role::RoleService`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/middlewares/jwt_extractor.rs:42:5 question mark operator is useless here
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/errors/middleware_errors.rs:56:59 this expression creates a reference which is immediately dereferenced by the compiler
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/infrastructure/databases/postgresql.rs:18:17 deref which would be done by auto-deref
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/jwt_extractor.rs:16:5 you should consider adding a `Default` implementation for `JwtExtractorServiceImpl`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/utils/append_to_file.rs:8:10 function call inside of `expect`

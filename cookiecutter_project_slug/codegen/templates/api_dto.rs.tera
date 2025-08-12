@@ -1,0 +1,89 @@
+use crate::domain::models::{{type_snake}}::{Create{{type_name}}, Update{{type_name}}, {{type_name}}};
+use crate::domain::repositories::repository::ResultPaging;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+#[derive(Deserialize, Serialize)]
+pub struct Create{{type_name}}DTO {
+    {%- for item in create_type_fields %}
+    pub {{ item.field }}: {{ item.typ }},
+    {%- endfor %}
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct Update{{type_name}}DTO {
+    pub id: Uuid,
+    {%- for item in create_type_fields %}
+    pub {{ item.field }}: {{ item.typ }},
+    {%- endfor %}
+}
+
+#[derive(Debug, Serialize)]
+pub struct {{type_name}}DTO {
+    {%- for item in type_fields %}
+    pub {{ item.field }}: {{ item.typ }},
+    {%- endfor %}
+}
+
+impl Into<{{type_name}}DTO> for {{type_name}} {
+    fn into(self) -> {{type_name}}DTO {
+        {{type_name}}DTO {
+            {%- for item in type_fields %}
+            {{ item.field }}: self.{{ item.field }},
+            {%- endfor %}
+        }
+    }
+}
+
+impl Into<Create{{type_name}}> for Create{{type_name}}DTO {
+    fn into(self) -> Create{{type_name}} {
+        Create{{type_name}} {
+            {%- for item in create_type_fields %}
+            {{ item.field }}: self.{{ item.field }},
+            {%- endfor %}
+        }
+    }
+}
+
+impl Into<Update{{type_name}}> for Update{{type_name}}DTO {
+    fn into(self) -> Update{{type_name}} {
+        Update{{type_name}} {
+            id: self.id,
+            {%- for item in create_type_fields %}
+            {{ item.field }}: self.{{ item.field }},
+            {%- endfor %}
+        }
+    }
+}
+
+impl Into<Create{{type_name}}DTO> for Create{{type_name}} {
+    fn into(self) -> Create{{type_name}}DTO {
+        Create{{type_name}}DTO {
+            {%- for item in create_type_fields %}
+            {{ item.field }}: self.{{ item.field }},
+            {%- endfor %}
+        }
+    }
+}
+
+impl Into<Update{{type_name}}DTO> for Update{{type_name}} {
+    fn into(self) -> Update{{type_name}}DTO {
+        Update{{type_name}}DTO {
+            id: self.id,
+            {%- for item in create_type_fields %}
+            {{ item.field }}: self.{{ item.field }},
+            {%- endfor %}
+        }
+    }
+}
+
+impl Into<ResultPaging<{{type_name}}DTO>> for ResultPaging<{{type_name}}> {
+    fn into(self) -> ResultPaging<{{type_name}}DTO> {
+        ResultPaging {
+            total: self.total,
+            items: self.items.into_iter().map(|item| item.into()).collect(),
+        }
+    }
+}
+
