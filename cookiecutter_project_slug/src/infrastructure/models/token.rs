@@ -9,7 +9,7 @@ use uuid::Uuid;
 pub struct TokenDiesel {
     pub id: Uuid,
     pub client_id: Uuid,
-    pub client_type: ClientType,
+    pub client_type: String,
     pub is_revoked: bool,
     pub token: String,
     pub expires_at: DateTime<Utc>,
@@ -22,7 +22,7 @@ impl From<Token> for TokenDiesel {
         Self {
             id: t.id,
             client_id: t.client_id,
-            client_type: t.client_type,
+            client_type: t.client_type.to_string(),
             is_revoked: t.is_revoked,
             token: t.token,
             expires_at: t.expires_at,
@@ -63,7 +63,7 @@ impl From<TokenDiesel> for Token {
         Self {
             id: d.id,
             client_id: d.client_id,
-            client_type: d.client_type,
+            client_type: d.client_type.into(),
             is_revoked: d.is_revoked,
             token: d.token,
             expires_at: d.expires_at,
@@ -78,7 +78,7 @@ impl From<CreateToken> for CreateTokenDiesel {
         Self {
             id: Uuid::new_v4(),
             client_id: t.client_id,
-            client_type: t.client_type,
+            client_type: t.client_type.to_string(),
             is_revoked: t.is_revoked,
             token: t.token,
             expires_at: t.expires_at,
@@ -93,7 +93,7 @@ impl From<&CreateToken> for CreateTokenDiesel {
         Self {
             id: Uuid::new_v4(),
             client_id: t.client_id,
-            client_type: t.client_type.clone(),
+            client_type: t.client_type.to_string(),
             is_revoked: t.is_revoked,
             token: t.token.clone(),
             expires_at: t.expires_at,
@@ -108,7 +108,7 @@ impl From<UpdateToken> for UpdateTokenDiesel {
         Self {
             id: t.id,
             client_id: t.client_id,
-            client_type: t.client_type,
+            client_type: t.client_type.to_string(),
             is_revoked: t.is_revoked,
             token: t.token,
             expires_at: t.expires_at,
@@ -123,7 +123,7 @@ impl From<&UpdateToken> for UpdateTokenDiesel {
         Self {
             id: t.id,
             client_id: t.client_id,
-            client_type: t.client_type.clone(),
+            client_type: t.client_type.to_string(),
             is_revoked: t.is_revoked,
             token: t.token.clone(),
             expires_at: t.expires_at,
@@ -138,7 +138,7 @@ impl From<CreateTokenDiesel> for Token {
         Self {
             id: Uuid::new_v4(),
             client_id: d.client_id,
-            client_type: ClientType::User,
+            client_type: d.client_type.into(),
             is_revoked: d.is_revoked,
             token: d.token,
             expires_at: d.expires_at,

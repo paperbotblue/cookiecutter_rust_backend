@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::error::CommonError;
 use crate::domain::models::token::{CreateToken, JwtClaims, Token, UpdateToken};
-use crate::domain::repositories::repository::{QueryParams, ResultPaging};
+use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::token::TokenQueryParams;
 
 #[async_trait]

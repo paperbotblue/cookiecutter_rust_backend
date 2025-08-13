@@ -5,7 +5,7 @@ pub fn append_to_file(file_name: &str, content: &str) {
     let mut data_file = OpenOptions::new()
         .append(true)
         .open(file_name)
-        .expect(format!("Unable to open file {}", file_name).as_str());
+        .unwrap_or_else(|_| panic!("Unable to open file {}", file_name));
 
     data_file
         .write_all(content.as_bytes())

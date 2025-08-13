@@ -1,6 +1,6 @@
 use super::role::ClientType;
 use actix_web::{FromRequest, HttpMessage};
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -18,7 +18,7 @@ pub struct Token {
 
 pub struct CreateToken {
     pub client_id: Uuid,
-    pub client_type: String,
+    pub client_type: ClientType,
     pub is_revoked: bool,
     pub token: String,
     pub expires_at: DateTime<Utc>,
@@ -29,7 +29,7 @@ pub struct CreateToken {
 pub struct UpdateToken {
     pub id: Uuid,
     pub client_id: Uuid,
-    pub client_type: String,
+    pub client_type: ClientType,
     pub is_revoked: bool,
     pub token: String,
     pub expires_at: DateTime<Utc>,

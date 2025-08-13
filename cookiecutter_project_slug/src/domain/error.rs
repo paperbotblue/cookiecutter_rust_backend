@@ -1,4 +1,4 @@
-use actix_web::{http::StatusCode, HttpResponse, HttpResponseBuilder, ResponseError};
+use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use serde::Serialize;
 use serde_json::json;
 

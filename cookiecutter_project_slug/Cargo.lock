@@ -514,6 +514,7 @@ dependencies = [
  "futures-util",
  "jsonwebtoken",
  "log",
+ "regex",
  "serde",
  "serde_json",
  "testcontainers",

@@ -3,18 +3,13 @@ use std::sync::Arc;
 use actix_web::{
     body::MessageBody,
     dev::{ServiceRequest, ServiceResponse},
-    http::header::AUTHORIZATION,
     middleware::Next,
     web, Error, HttpMessage,
 };
-use chrono::Utc;
 
 use crate::domain::{
-    error::{ApiError, CommonError},
-    errors::{
-        middleware_errors::MiddlewareError, permission_errors::PermissionError,
-        token_errors::TokenError,
-    },
+    error::CommonError,
+    errors::middleware_errors::MiddlewareError,
     services::{jwt_extractor::JwtExtractorService, role::RoleService, token::TokenService},
 };
 
@@ -39,7 +34,7 @@ pub async fn check_permission_middleware(
 
     req.extensions_mut().insert(claims);
 
-    Ok(next.call(req).await?)
+    next.call(req).await
 }
 
 fn get_service<T: 'static + Sync + Send + ?Sized>(

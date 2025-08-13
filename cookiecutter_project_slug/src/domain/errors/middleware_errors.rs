@@ -1,9 +1,4 @@
-use actix_web::http::StatusCode;
-use actix_web::{HttpResponse, ResponseError};
-use serde_json::json;
-
 use super::response_code::ApiResponseCode;
-use super::token_errors::TokenError;
 use crate::domain::error::CommonError;
 use crate::utils::append_to_file::append_to_file;
 use std::error::Error;
@@ -53,7 +48,7 @@ impl From<MiddlewareError<'_>> for CommonError {
             MiddlewareError::InvalidTokenFormat => ApiResponseCode::Forbidden,
             MiddlewareError::UnableToCallNext => ApiResponseCode::InternalServerError,
             MiddlewareError::InternalServerError(e) => {
-                append_to_file("../../../error_logs.txt", &e);
+                append_to_file("../../../error_logs.txt", e);
                 ApiResponseCode::InternalServerError
             }
         };

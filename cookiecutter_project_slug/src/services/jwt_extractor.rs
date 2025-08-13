@@ -1,16 +1,19 @@
-use std::sync::Arc;
-
-use actix_web::{dev::ServiceRequest, http::header::AUTHORIZATION, web};
+use actix_web::{dev::ServiceRequest, http::header::AUTHORIZATION};
 use async_trait::async_trait;
 
 use crate::domain::{
-    error::CommonError,
-    errors::middleware_errors::MiddlewareError,
-    services::{jwt_extractor::JwtExtractorService, role::RoleService, token::TokenService},
+    error::CommonError, errors::middleware_errors::MiddlewareError,
+    services::jwt_extractor::JwtExtractorService,
 };
 
 #[derive(Clone)]
 pub struct JwtExtractorServiceImpl {}
+
+impl Default for JwtExtractorServiceImpl {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl JwtExtractorServiceImpl {
     pub fn new() -> Self {

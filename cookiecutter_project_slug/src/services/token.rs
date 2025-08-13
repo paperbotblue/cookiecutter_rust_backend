@@ -67,7 +67,7 @@ impl TokenService for TokenServiceImpl {
 
         let new_refresh_token = CreateToken {
             client_id,
-            client_type: client_type.clone(),
+            client_type: client_type.clone().into(),
             is_revoked: false,
             token: "".to_string(),
             expires_at: exp,
