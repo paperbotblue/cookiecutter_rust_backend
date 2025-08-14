@@ -26,7 +26,7 @@ impl PermissionDieselRepository {
 
 #[async_trait]
 impl PermissionRepository for PermissionDieselRepository {
-    async fn create(&self, new_item: &CreatePermission) -> RepositoryResult<Permission> {
+    async fn create(&self, new_item: CreatePermission) -> RepositoryResult<Permission> {
         use crate::infrastructure::schema::permissions::dsl::permissions;
         let new_item_diesel: CreatePermissionDiesel = new_item.into();
         let mut conn = self.pool.get().unwrap();
@@ -40,10 +40,10 @@ impl PermissionRepository for PermissionDieselRepository {
         Ok(result.into())
     }
 
-    async fn update(&self, new_item: &UpdatePermission) -> RepositoryResult<Permission> {
+    async fn update(&self, new_item: UpdatePermission) -> RepositoryResult<Permission> {
         use crate::infrastructure::schema::permissions::dsl::{id as target_id, permissions};
-        let new_item_diesel: UpdatePermissionDiesel = new_item.into();
         let id_val: Uuid = new_item.id;
+        let new_item_diesel: UpdatePermissionDiesel = new_item.into();
         let mut conn = self.pool.get().unwrap();
         let result: PermissionDiesel = run(move || {
             diesel::update(permissions.filter(target_id.eq(id_val)))

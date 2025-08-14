@@ -4,36 +4,25 @@ use regex::Regex;
 use serde::de::Error as DeError;
 use serde::Deserializer;
 
-static NAME_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9_]+$").expect(""));
-static DESCRIPTION_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9]+$").unwrap());
+use crate::domain::models::role::ClientType;
+
+static TOKEN_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*$").unwrap());
 
 pub fn validate_token_fields<'de, D: Deserializer<'de>>(
-    name: &str,
-    description: &str,
+    token: &str,
+    client_type: &ClientType,
 ) -> Result<(), D::Error> {
-    if name.len() < 3 || name.len() > 255 {
-        return Err(D::Error::custom(
-            "Name must be between 3 and 255 characters",
-        ));
+    if token.len() < 10 || token.len() > 255 {
+        return Err(D::Error::custom("Invalid token"));
     }
 
-    if description.len() < 3 || description.len() > 2048 {
-        return Err(D::Error::custom(
-            "Description must be between 3 and 2048 characters",
-        ));
+    if *client_type == ClientType::Invalid {
+        return Err(D::Error::custom("invalid client type"));
     }
 
-    if !NAME_RE.is_match(name) {
-        return Err(D::Error::custom(
-            "Name can only contain letters, numbers, and underscores",
-        ));
+    if !TOKEN_RE.is_match(token) {
+        return Err(D::Error::custom("Invalid Token"));
     }
-
-    if !DESCRIPTION_RE.is_match(description) {
-        return Err(D::Error::custom(
-            "Description can only contain letters and numbers",
-        ));
-    }
-
     Ok(())
 }

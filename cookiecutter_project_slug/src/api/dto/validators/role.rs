@@ -4,8 +4,13 @@ use regex::Regex;
 use serde::de::Error as DeError;
 use serde::Deserializer;
 
-static NAME_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9_]+$").expect(""));
-static DESCRIPTION_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9]+$").unwrap());
+// Name: ASCII letters, digits, underscore, 1+ chars
+static NAME_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[A-Za-z0-9_ ]+$").expect("Invalid NAME_RE pattern"));
+
+// Description: ASCII letters and digits only, 1+ chars
+static DESCRIPTION_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[A-Za-z0-9 ]+$").expect("Invalid DESCRIPTION_RE pattern"));
 
 pub fn validate_role_fields<'de, D: Deserializer<'de>>(
     name: &str,

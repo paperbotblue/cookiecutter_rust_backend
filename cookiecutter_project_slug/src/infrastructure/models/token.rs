@@ -1,4 +1,3 @@
-use crate::domain::models::role::ClientType;
 use crate::domain::models::token::{CreateToken, Token, UpdateToken};
 use crate::infrastructure::schema::refresh_tokens;
 use chrono::{DateTime, Utc};

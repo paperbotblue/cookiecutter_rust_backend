@@ -24,8 +24,8 @@ impl QueryParams for PermissionQueryParams {
 
 #[async_trait]
 pub trait PermissionRepository: Send + Sync {
-    async fn create(&self, new_permission: &CreatePermission) -> RepositoryResult<Permission>;
-    async fn update(&self, update_permission: &UpdatePermission) -> RepositoryResult<Permission>;
+    async fn create(&self, new_permission: CreatePermission) -> RepositoryResult<Permission>;
+    async fn update(&self, update_permission: UpdatePermission) -> RepositoryResult<Permission>;
     async fn list(
         &self,
         params: PermissionQueryParams,

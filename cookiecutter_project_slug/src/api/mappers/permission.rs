@@ -35,25 +35,6 @@ impl From<UpdatePermissionDTO> for UpdatePermission {
     }
 }
 
-impl From<CreatePermission> for CreatePermissionDTO {
-    fn from(val: CreatePermission) -> Self {
-        CreatePermissionDTO {
-            name: val.name,
-            description: val.description,
-        }
-    }
-}
-
-impl From<UpdatePermission> for UpdatePermissionDTO {
-    fn from(val: UpdatePermission) -> Self {
-        UpdatePermissionDTO {
-            id: val.id,
-            name: val.name,
-            description: val.description,
-        }
-    }
-}
-
 impl From<ResultPaging<Permission>> for ResultPaging<PermissionDTO> {
     fn from(val: ResultPaging<Permission>) -> Self {
         ResultPaging {

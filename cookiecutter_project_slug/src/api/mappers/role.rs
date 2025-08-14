@@ -35,25 +35,6 @@ impl From<UpdateRoleDTO> for UpdateRole {
     }
 }
 
-impl From<CreateRole> for CreateRoleDTO {
-    fn from(val: CreateRole) -> Self {
-        CreateRoleDTO {
-            name: val.name,
-            description: val.description,
-        }
-    }
-}
-
-impl From<UpdateRole> for UpdateRoleDTO {
-    fn from(val: UpdateRole) -> Self {
-        UpdateRoleDTO {
-            id: val.id,
-            name: val.name,
-            description: val.description,
-        }
-    }
-}
-
 impl From<ResultPaging<Role>> for ResultPaging<RoleDTO> {
     fn from(val: ResultPaging<Role>) -> Self {
         ResultPaging {

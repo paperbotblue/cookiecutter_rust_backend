@@ -1,12 +1,5 @@
-use diesel::deserialize::{self, FromSql, FromSqlRow};
-use diesel::expression::AsExpression;
-use diesel::pg::{Pg, PgValue};
-use diesel::serialize::{self, IsNull, Output, ToSql};
-use diesel::sql_types::Text;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::io::Write;
-use std::str::FromStr;
 use uuid::Uuid;
 
 pub struct Role {

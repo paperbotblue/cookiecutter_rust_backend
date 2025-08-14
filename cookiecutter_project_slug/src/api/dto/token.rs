@@ -60,7 +60,7 @@ impl<'de> Deserialize<'de> for CreateTokenDTO {
     {
         let raw = RawTokenDTO::deserialize(deserializer)?;
 
-        // validate_token_fields::<D>(&raw.name, &raw.description)?;
+        validate_token_fields::<D>(&raw.token, &raw.client_type)?;
 
         Ok(CreateTokenDTO {
             client_id: raw.client_id,
@@ -85,7 +85,7 @@ impl<'de> Deserialize<'de> for UpdateTokenDTO {
             .id
             .ok_or_else(|| D::Error::custom("ID is required for update"))?;
 
-        // validate_token_fields::<D>(&raw.name, &raw.description)?;
+        validate_token_fields::<D>(&raw.token, &raw.client_type)?;
 
         Ok(UpdateTokenDTO {
             id,

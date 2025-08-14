@@ -15,7 +15,7 @@ pub type DBConn = PostgresPool;
 pub fn db_pool() -> DBConn {
     dotenv().ok();
     let database_url = env::var(POSTGRESQL_DB_URI)
-        .expect(&format!("{value} must be set", value = POSTGRESQL_DB_URI));
+        .unwrap_or_else(|_| panic!("{value} must be set", value = POSTGRESQL_DB_URI));
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     Pool::builder()
         .build(manager)

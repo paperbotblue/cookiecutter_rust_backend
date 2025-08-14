@@ -56,32 +56,12 @@ impl From<CreatePermission> for CreatePermissionDiesel {
     }
 }
 
-impl From<&CreatePermission> for CreatePermissionDiesel {
-    fn from(t: &CreatePermission) -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            name: t.name.clone(),
-            description: t.description.clone(),
-        }
-    }
-}
-
 impl From<UpdatePermission> for UpdatePermissionDiesel {
     fn from(t: UpdatePermission) -> Self {
         Self {
             id: t.id,
             name: t.name,
             description: t.description,
-        }
-    }
-}
-
-impl From<&UpdatePermission> for UpdatePermissionDiesel {
-    fn from(t: &UpdatePermission) -> Self {
-        Self {
-            id: t.id,
-            name: t.name.clone(),
-            description: t.description.clone(),
         }
     }
 }

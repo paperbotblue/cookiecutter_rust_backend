@@ -23,11 +23,11 @@ impl PermissionServiceImpl {
 #[async_trait]
 impl PermissionService for PermissionServiceImpl {
     async fn create(&self, item: CreatePermission) -> Result<Permission, CommonError> {
-        self.repository.create(&item).await.map_err(|e| e.into())
+        self.repository.create(item).await.map_err(|e| e.into())
     }
 
     async fn update(&self, item: UpdatePermission) -> Result<Permission, CommonError> {
-        self.repository.update(&item).await.map_err(|e| e.into())
+        self.repository.update(item).await.map_err(|e| e.into())
     }
 
     async fn list(
