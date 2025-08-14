@@ -12,6 +12,7 @@ mod test_role_crud {
 
     use crate::tests::api::setup::{setup_test_env, spawn_app};
 
+    #[tokio::test]
     async fn test_invalid_input_name() {
         let base_url = spawn_app().await;
         let client = Client::new();
@@ -35,6 +36,7 @@ mod test_role_crud {
         assert_eq!(status, 400);
     }
 
+    #[tokio::test]
     async fn test_invalid_input_description() {
         let base_url = spawn_app().await;
         let client = Client::new();
@@ -58,6 +60,7 @@ mod test_role_crud {
         assert_eq!(status, 400);
     }
 
+    #[tokio::test]
     async fn test_invalid_input_name_and_description() {
         let base_url = spawn_app().await;
         let client = Client::new();
@@ -81,6 +84,7 @@ mod test_role_crud {
         assert_eq!(status, 400);
     }
 
+    #[tokio::test]
     async fn test_non_existent_role_retrieval() {
         let base_url = spawn_app().await;
         let client = Client::new();

@@ -10,8 +10,12 @@ mod test_role_crud {
     use std::sync::Arc;
     use tokio::task;
 
-    use crate::tests::api::setup::{setup_test_env, spawn_app};
+    use crate::tests::api::{
+        setup::{setup_test_env, spawn_app},
+        test_role::helper::{create_role, delete_role_by_id, get_role_by_id, list_roles},
+    };
 
+    #[tokio::test]
     async fn test_crud_operations() {
         let base_url = spawn_app().await;
         let client = Client::new();
@@ -21,51 +25,32 @@ mod test_role_crud {
             "name": "Admin",
             "description": "Admin auth level 2"
         });
-        let resp = client
-            .post(format!("{}/roles", base_url))
-            .json(&request_body)
-            .send()
-            .await
-            .unwrap();
+        let resp = create_role(&client, request_body).await;
+
         assert!(resp.status().is_success());
         let role: RoleDTO = resp.json().await.unwrap();
         assert_eq!(role.name, "Admin");
         assert_eq!(role.description, "Admin auth level 2");
 
         // Get role by id
-        let resp = client
-            .get(format!("{}/roles/{}", base_url, role.id))
-            .send()
-            .await
-            .unwrap();
+        let resp = get_role_by_id(&client, role.id).await;
+
         assert!(resp.status().is_success());
         let retrieved_role: RoleDTO = resp.json().await.unwrap();
         assert_eq!(role.id, retrieved_role.id);
 
         // List roles
-        let resp = client
-            .get(format!("{}/roles", base_url))
-            .send()
-            .await
-            .unwrap();
+        let resp = list_roles(&client).await;
         assert!(resp.status().is_success());
         let roles: ResultPaging<RoleDTO> = resp.json().await.unwrap();
         assert_eq!(roles.items.len(), 1);
 
         // Delete role
-        let resp = client
-            .delete(format!("{}/roles/{}", base_url, role.id))
-            .send()
-            .await
-            .unwrap();
+        let resp = delete_role_by_id(&client, role.id).await;
         assert!(resp.status().is_success());
 
         // Verify empty list
-        let resp = client
-            .get(format!("{}/roles", base_url))
-            .send()
-            .await
-            .unwrap();
+        let resp = list_roles(&client).await;
         assert!(resp.status().is_success());
         let roles: ResultPaging<RoleDTO> = resp.json().await.unwrap();
         assert_eq!(roles.items.len(), 0);
