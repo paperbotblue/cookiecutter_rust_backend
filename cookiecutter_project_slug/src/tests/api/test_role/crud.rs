@@ -1,23 +1,15 @@
 #[cfg(test)]
 mod test_role_crud {
     use cookiecutter_project_slug::api::dto::role::RoleDTO;
-    use cookiecutter_project_slug::container::Container;
-    use cookiecutter_project_slug::create_app::create_app;
+
     use cookiecutter_project_slug::domain::repositories::repository::ResultPaging;
     use reqwest::Client;
     use serde_json::json;
-    use std::net::TcpListener;
-    use std::sync::Arc;
-    use tokio::task;
 
-    use crate::tests::api::{
-        setup::{setup_test_env, spawn_app},
-        test_role::helper::{create_role, delete_role_by_id, get_role_by_id, list_roles},
-    };
+    use crate::tests::api::test_role::helper::{create_role, delete_role_by_id, get_role_by_id, list_roles};
 
     #[tokio::test]
     async fn test_crud_operations() {
-        let base_url = spawn_app().await;
         let client = Client::new();
 
         // Create role

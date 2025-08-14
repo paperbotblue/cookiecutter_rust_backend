@@ -1,12 +1,5 @@
-use cookiecutter_project_slug::api::dto::role::RoleDTO;
-use cookiecutter_project_slug::container::Container;
-use cookiecutter_project_slug::create_app::create_app;
-use cookiecutter_project_slug::domain::repositories::repository::ResultPaging;
 use reqwest::{Client, Response};
-use serde_json::{json, Value};
-use std::net::TcpListener;
-use std::sync::Arc;
-use tokio::task;
+use serde_json::Value;
 use uuid::Uuid;
 
 use crate::tests::api::setup::spawn_app;
@@ -31,10 +24,10 @@ pub async fn update_role(client: &Client, request_body: Value) -> Response {
         .unwrap()
 }
 
-pub async fn get_role_by_id(client: &Client, id: Uuid) -> Response {
+pub async fn get_role_by_id(client: &Client, id: impl ToString) -> Response {
     let base_url = spawn_app().await;
     client
-        .get(format!("{}/roles/{}", base_url, id))
+        .get(format!("{}/roles/{}", base_url, id.to_string()))
         .send()
         .await
         .unwrap()
@@ -53,6 +46,18 @@ pub async fn delete_role_by_id(client: &Client, id: Uuid) -> Response {
     let base_url = spawn_app().await;
     client
         .delete(format!("{}/roles/{}", base_url, id))
+        .send()
+        .await
+        .unwrap()
+}
+
+pub async fn list_paginated_roles(client: &Client, limit: i32, offset: i32) -> Response {
+    let base_url = spawn_app().await;
+    client
+        .get(format!(
+            "{}/roles?limit={}&offset={}&title=test",
+            base_url, limit, offset
+        ))
         .send()
         .await
         .unwrap()

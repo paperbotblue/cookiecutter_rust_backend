@@ -1,15 +1,10 @@
-use actix_web::test;
-use actix_web::{body::MessageBody, dev::ServiceResponse};
 use cookiecutter_project_slug::container::Container;
 use cookiecutter_project_slug::create_app::create_app;
-use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use once_cell::sync::OnceCell;
 use std::net::TcpListener;
-use std::process::Command;
 use std::sync::Arc;
 use testcontainers::{clients, images::postgres};
 use tokio::task;
-pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
 pub struct TestEnv {
     pub container: Arc<Container>,
@@ -52,7 +47,7 @@ pub async fn spawn_app() -> String {
     let url = format!("http://127.0.0.1:{}", port);
 
     // Store URL so future calls reuse it
-    BASE_URL
+    let _ = BASE_URL
         .set(url.clone())
         .map_err(|err| println!("+++++++++++++++++ {:?}", err));
     url

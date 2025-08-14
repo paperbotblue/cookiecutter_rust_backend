@@ -1,32 +1,23 @@
 #[cfg(test)]
 mod test_role_crud {
-    use cookiecutter_project_slug::api::dto::role::RoleDTO;
-    use cookiecutter_project_slug::container::Container;
-    use cookiecutter_project_slug::create_app::create_app;
-    use cookiecutter_project_slug::domain::repositories::repository::ResultPaging;
+
     use reqwest::Client;
     use serde_json::json;
-    use std::net::TcpListener;
-    use std::sync::Arc;
-    use tokio::task;
+    use uuid::Uuid;
 
-    use crate::tests::api::setup::{setup_test_env, spawn_app};
+    use crate::tests::api::test_role::helper::{create_role, get_role_by_id};
 
     #[tokio::test]
     async fn test_invalid_input_name() {
-        let base_url = spawn_app().await;
         let client = Client::new();
 
         let request_body = json!({
             "name": "",
             "description": "Invalid role"
         });
-        let resp = client
-            .post(format!("{}/roles", base_url))
-            .json(&request_body)
-            .send()
-            .await
-            .unwrap();
+
+        let resp = create_role(&client, request_body).await;
+
         let status = resp.status();
         let body_str = resp.text().await.unwrap();
         eprintln!(
@@ -38,19 +29,13 @@ mod test_role_crud {
 
     #[tokio::test]
     async fn test_invalid_input_description() {
-        let base_url = spawn_app().await;
         let client = Client::new();
 
         let request_body = json!({
             "name": "subadmin",
             "description": ""
         });
-        let resp = client
-            .post(format!("{}/roles", base_url))
-            .json(&request_body)
-            .send()
-            .await
-            .unwrap();
+        let resp = create_role(&client, request_body).await;
         let status = resp.status();
         let body_str = resp.text().await.unwrap();
         eprintln!(
@@ -62,19 +47,14 @@ mod test_role_crud {
 
     #[tokio::test]
     async fn test_invalid_input_name_and_description() {
-        let base_url = spawn_app().await;
         let client = Client::new();
 
         let request_body = json!({
             "name": "",
             "description": ""
         });
-        let resp = client
-            .post(format!("{}/roles", base_url))
-            .json(&request_body)
-            .send()
-            .await
-            .unwrap();
+        let resp = create_role(&client, request_body).await;
+
         let status = resp.status();
         let body_str = resp.text().await.unwrap();
         eprintln!(
@@ -86,14 +66,9 @@ mod test_role_crud {
 
     #[tokio::test]
     async fn test_non_existent_role_retrieval() {
-        let base_url = spawn_app().await;
         let client = Client::new();
 
-        let resp = client
-            .get(format!("{}/roles/9999", base_url))
-            .send()
-            .await
-            .unwrap();
+        let resp = get_role_by_id(&client, Uuid::new_v4()).await;
         let status = resp.status();
         let body_str = resp.text().await.unwrap();
         eprintln!(
@@ -101,5 +76,18 @@ mod test_role_crud {
             status, body_str
         );
         assert_eq!(status, 404);
+    }
+    #[tokio::test]
+    async fn test_invalid_id_role_retrieval() {
+        let client = Client::new();
+
+        let resp = get_role_by_id(&client, "233223").await;
+        let status = resp.status();
+        let body_str = resp.text().await.unwrap();
+        eprintln!(
+            "Non-existent role response: Status {}, Response: {}",
+            status, body_str
+        );
+        assert_eq!(status, 400);
     }
 }

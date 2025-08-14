@@ -36,6 +36,8 @@ impl RoleService for RoleServiceImpl {
         self.repository.list(params).await.map_err(|e| e.into())
     }
 
+    // FIX: this is returning 500 when invalid Uuid is given it should return 404
+    // this may be happening in other places as well
     async fn get(&self, item_id: Uuid) -> Result<Role, CommonError> {
         self.repository.get(item_id).await.map_err(|e| e.into())
     }
