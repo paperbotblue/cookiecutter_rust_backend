@@ -1,17 +1,20 @@
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, Update{{type_name}}, {{type_name}}};
 use crate::domain::repositories::repository::ResultPaging;
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
+use serde::de::Error as DeError;
 
-#[derive(Deserialize, Serialize)]
+use super::validators::{{type_snake}}::validate_{{type_snake}}_fields;
+
+#[derive(Serialize)]
 pub struct Create{{type_name}}DTO {
     {%- for item in create_type_fields %}
     pub {{ item.field }}: {{ item.typ }},
     {%- endfor %}
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct Update{{type_name}}DTO {
     pub id: Uuid,
     {%- for item in create_type_fields %}
@@ -26,6 +29,13 @@ pub struct {{type_name}}DTO {
     {%- endfor %}
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Raw{{type_name}}DTO {
+    {%- for item in type_fields %}
+    pub {{ item.field }}: {{ item.typ }},
+    {%- endfor %}
+}
+
 impl<'de> Deserialize<'de> for Create{{type_name}}DTO {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -33,7 +43,7 @@ impl<'de> Deserialize<'de> for Create{{type_name}}DTO {
     {
         let raw = Raw{{type_name}}DTO::deserialize(deserializer)?;
 
-        validate_{{type_snake}}_fields::<D>(&raw.name, &raw.description)?;
+        validate_{{type_snake}}_fields::<D>()?;
 
         Ok(Create{{type_name}}DTO {
             name: raw.name,
@@ -53,7 +63,7 @@ impl<'de> Deserialize<'de> for Update{{type_name}}DTO {
             .id
             .ok_or_else(|| D::Error::custom("ID is required for update"))?;
 
-        validate_{{type_snake}}_fields::<D>(&raw.name, &raw.description)?;
+        validate_{{type_snake}}_fields::<D>()?;
 
         Ok(Update{{type_name}}DTO {
             id,

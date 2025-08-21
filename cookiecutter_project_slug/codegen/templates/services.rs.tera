@@ -8,6 +8,7 @@ use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}Repository;
 use crate::domain::services::{{type_snake}}::{{type_name}}Service;
+use crate::domain::errors::{{type_snake}}_errors::{{type_name}}Error;
 
 #[derive(Clone)]
 pub struct {{type_name}}ServiceImpl {

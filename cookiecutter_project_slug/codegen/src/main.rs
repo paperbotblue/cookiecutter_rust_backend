@@ -221,8 +221,11 @@ fn main() {
 
         // Check if it's a handler file
         let is_handler = output_path.contains("api/controllers");
+        let is_errors = output_path.contains("domain/errors");
         let mod_override = if is_handler {
             Some(format!("{}_handler", type_snake))
+        } else if is_errors {
+            Some(format!("{}_errors", type_snake))
         } else {
             None
         };

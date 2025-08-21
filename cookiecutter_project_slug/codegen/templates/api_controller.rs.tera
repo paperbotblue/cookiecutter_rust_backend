@@ -36,7 +36,7 @@ pub async fn get_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
     params: UuidParam,
 ) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
-    let {{type_snake}} = {{type_snake}}_service.get(params.into_inner()).await?;
+    let {{type_snake}} = {{type_snake}}_service.get(params.0).await?;
     Ok(web::Json({{type_snake}}.into()))
 }
 
@@ -44,7 +44,7 @@ pub async fn delete_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
     params: UuidParam,
 ) -> Result<HttpResponse, ApiError> {
-    {{type_snake}}_service.delete(params.into_inner()).await?;
+    {{type_snake}}_service.delete(params.0).await?;
     Ok(HttpResponse::NoContent().finish())
 }
 

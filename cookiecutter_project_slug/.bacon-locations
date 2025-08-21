@@ -4,9 +4,21 @@ warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/role_handler.rs:8:5 unused import: `uuid::Uuid`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/role_permission_handler.rs:8:5 unused import: `uuid::Uuid`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/token_handler.rs:10:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/todo_handler.rs:2:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/validators/todo.rs:1:5 unused import: `std::sync::LazyLock`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/validators/todo.rs:3:5 unused import: `regex::Regex`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/validators/todo.rs:4:5 unused import: `serde::de::Error as DeError`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/todo.rs:1:35 unused imports: `CreateTodo`, `Todo`, and `UpdateTodo`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/todo.rs:2:5 unused import: `crate::domain::repositories::repository::ResultPaging`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/todo.rs:3:14 unused imports: `DateTime` and `Utc`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/routes/permission.rs:2:5 unused import: `middleware::from_fn`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/routes/todo.rs:10:5 unused import: `middleware::from_fn`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/models/todo.rs:1:13 unused imports: `Deserialize` and `Serialize`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/models/todo.rs:2:5 unused import: `std::fmt`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/infrastructure/models/todo.rs:5:14 unused imports: `DateTime` and `Utc`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/dto/validators/todo.rs:28:5 unreachable expression
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/permission.rs:27:16 redundant pattern matching, consider using `is_some()`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/role.rs:28:16 redundant pattern matching, consider using `is_some()`
 warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/token.rs:52:64 unnecessary map of the identity function
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/todo.rs:28:21 the method `create` doesn't need a mutable reference
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/todo.rs:35:21 the method `update` doesn't need a mutable reference

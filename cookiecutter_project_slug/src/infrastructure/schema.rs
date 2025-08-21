@@ -39,6 +39,15 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    todos (id) {
+        id -> Uuid,
+        #[max_length = 50]
+        name -> Varchar,
+        description -> Text,
+    }
+}
+
 diesel::joinable!(role_permissions -> permissions (permission_id));
 diesel::joinable!(role_permissions -> roles (role_id));
 
@@ -47,4 +56,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     refresh_tokens,
     role_permissions,
     roles,
+    todos,
 );
