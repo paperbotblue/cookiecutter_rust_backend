@@ -10,15 +10,36 @@ mod test_item_invalid_inputs {
         test_role::aa_config::{
             INVALID_DATA_EMPTY_DATA, INVALID_DATA_NO_DESCRIPTION, INVALID_DATA_NO_NAME, SCOPE,
         },
+        test_role_permission::aa_config::{INVALID_DATA_NO_PERMISSION_ID, INVALID_DATA_NO_ROLE_ID},
     };
 
     #[tokio::test]
-    async fn test_invalid_input_name() {
+    async fn test_invalid_input_role_id() {
         let client = Client::new();
 
         let resp = make_request(
             &client,
-            ApiRequest::Create(INVALID_DATA_NO_NAME.clone()),
+            ApiRequest::Create(INVALID_DATA_NO_ROLE_ID.clone()),
+            &SCOPE,
+        )
+        .await;
+
+        let status = resp.status();
+        let body_str = resp.text().await.unwrap();
+        eprintln!(
+            "Invalid input response: Status {}, Response: {}",
+            status, body_str
+        );
+        assert_eq!(status, 400);
+    }
+
+    #[tokio::test]
+    async fn test_invalid_input_permission_id() {
+        let client = Client::new();
+
+        let resp = make_request(
+            &client,
+            ApiRequest::Create(INVALID_DATA_NO_PERMISSION_ID.clone()),
             &SCOPE,
         )
         .await;

@@ -27,7 +27,7 @@ pub trait TokenRepository: Send + Sync {
     async fn create(&self, new_token: &CreateToken) -> RepositoryResult<Token>;
     async fn update(&self, update_token: &UpdateToken) -> RepositoryResult<Token>;
     async fn list(&self, params: TokenQueryParams) -> RepositoryResult<ResultPaging<Token>>;
-    async fn get(&self, token_id: Uuid) -> RepositoryResult<Token>;
+    async fn get(&self, token_id: Uuid) -> RepositoryResult<Option<Token>>;
     async fn get_by_client_id(&self, client_id: Uuid) -> RepositoryResult<Option<Token>>;
     async fn delete(&self, refresh_token_id: Uuid) -> RepositoryResult<()>;
 }

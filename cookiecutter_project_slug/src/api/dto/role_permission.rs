@@ -17,7 +17,7 @@ pub struct UpdateRolePermissionDTO {
     pub description: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RolePermissionDTO {
     pub role_id: Uuid,
     pub permission_id: Uuid,

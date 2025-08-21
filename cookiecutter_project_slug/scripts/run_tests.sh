@@ -2,4 +2,4 @@
 
 diesel migration revert -n 100
 diesel migration run
-cargo test
+cargo test -- --test-threads=1

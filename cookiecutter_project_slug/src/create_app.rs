@@ -1,4 +1,6 @@
+use crate::api::routes::permission::permission_config;
 use crate::api::routes::role::role_scope;
+use crate::api::routes::token::refresh_token_scope;
 use crate::container::Container;
 use actix_web::body::MessageBody;
 use actix_web::dev::{ServiceFactory, ServiceRequest, ServiceResponse};
@@ -30,6 +32,8 @@ pub fn create_app(
         .app_data(web::Data::from(role_service.clone()))
         .app_data(web::Data::from(role_permission_service.clone()))
         .wrap(Logger::default())
+        .configure(permission_config)
         .service(role_scope())
+        .service(refresh_token_scope())
     //.service(todo_scope())
 }

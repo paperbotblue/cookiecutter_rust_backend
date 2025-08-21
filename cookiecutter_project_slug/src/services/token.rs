@@ -49,7 +49,11 @@ impl TokenService for TokenServiceImpl {
     }
 
     async fn get(&self, item_id: Uuid) -> Result<Token, CommonError> {
-        self.repository.get(item_id).await.map_err(|e| e.into())
+        if let Some(token) = self.repository.get(item_id).await.map_err(|e| e)? {
+            Ok(token)
+        } else {
+            return Err(TokenError::RefreshTokenDoesNotExists.into());
+        }
     }
 
     async fn delete(&self, item_id: Uuid) -> Result<(), CommonError> {

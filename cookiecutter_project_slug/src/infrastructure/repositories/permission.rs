@@ -75,17 +75,34 @@ impl PermissionRepository for PermissionDieselRepository {
         })
     }
 
-    async fn get(&self, item_id: Uuid) -> RepositoryResult<Permission> {
+    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<Permission>> {
         use crate::infrastructure::schema::permissions::dsl::{id, permissions};
         let mut conn = self.pool.get().unwrap();
+
         run(move || {
             permissions
                 .filter(id.eq(item_id))
                 .first::<PermissionDiesel>(&mut conn)
+                .optional() // 👈 converts NotFound into Ok(None)
         })
         .await
         .map_err(|e| DieselRepositoryError::from(e).into_inner())
-        .map(|v| v.into())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
+    }
+
+    async fn get_by_name(&self, permission_name: String) -> RepositoryResult<Option<Permission>> {
+        use crate::infrastructure::schema::permissions::dsl::{name, permissions};
+        let mut conn = self.pool.get().unwrap();
+
+        run(move || {
+            permissions
+                .filter(name.eq(permission_name))
+                .first::<PermissionDiesel>(&mut conn)
+                .optional() // 👈 converts NotFound into Ok(None)
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
     }
 
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {

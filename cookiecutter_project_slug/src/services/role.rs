@@ -25,6 +25,15 @@ impl RoleServiceImpl {
 #[async_trait]
 impl RoleService for RoleServiceImpl {
     async fn create(&self, item: CreateRole) -> Result<Role, CommonError> {
+        if let Some(_) = self
+            .repository
+            .get_by_role_name(item.name.clone())
+            .await
+            .map_err(|e| RoleError::InternalServerError(e.message))?
+        {
+            return Err(RoleError::RoleAlreadyExist.into());
+        }
+
         self.repository.create(&item).await.map_err(|e| e.into())
     }
 
@@ -36,10 +45,16 @@ impl RoleService for RoleServiceImpl {
         self.repository.list(params).await.map_err(|e| e.into())
     }
 
-    // FIX: this is returning 500 when invalid Uuid is given it should return 404
-    // this may be happening in other places as well
     async fn get(&self, item_id: Uuid) -> Result<Role, CommonError> {
-        self.repository.get(item_id).await.map_err(|e| e.into())
+        let result = self
+            .repository
+            .get(item_id)
+            .await
+            .map_err(|e| RoleError::InternalServerError(e.message.clone()))?;
+        match result {
+            Some(role) => Ok(role),
+            None => Err(RoleError::RoleDoesNotExists.into()),
+        }
     }
 
     async fn check_permission(&self, role: &str, permission: &str) -> Result<(), CommonError> {

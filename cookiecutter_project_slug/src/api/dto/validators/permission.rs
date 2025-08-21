@@ -5,7 +5,8 @@ use serde::de::Error as DeError;
 use serde::Deserializer;
 
 static NAME_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9_]+$").expect(""));
-static DESCRIPTION_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9]+$").unwrap());
+static DESCRIPTION_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^[A-Za-z0-9 ]+$").expect("Invalid DESCRIPTION_RE pattern"));
 
 pub fn validate_permission_fields<'de, D: Deserializer<'de>>(
     name: &str,

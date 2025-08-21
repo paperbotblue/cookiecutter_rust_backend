@@ -7,7 +7,7 @@ mod test_item_duplication {
 
     use crate::tests::api::{
         helper::{make_request, ApiRequest},
-        test_role::aa_config::{response_unwrap_dto, CREATE_DUP_DATA, SCOPE},
+        test_permission::aa_config::{response_unwrap_dto, CREATE_DUP_DATA, SCOPE},
     };
 
     #[tokio::test]

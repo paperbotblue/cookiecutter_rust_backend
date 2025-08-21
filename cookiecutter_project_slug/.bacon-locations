@@ -1,0 +1,12 @@
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/permission_handler.rs:1:5 unused import: `std::str::FromStr`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/permission_handler.rs:5:38 unused import: `CommonError`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/permission_handler.rs:10:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/role_handler.rs:8:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/role_permission_handler.rs:8:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/controllers/token_handler.rs:10:5 unused import: `uuid::Uuid`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/api/routes/permission.rs:2:5 unused import: `middleware::from_fn`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/models/todo.rs:1:13 unused imports: `Deserialize` and `Serialize`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/domain/models/todo.rs:2:5 unused import: `std::fmt`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/permission.rs:27:16 redundant pattern matching, consider using `is_some()`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/role.rs:28:16 redundant pattern matching, consider using `is_some()`
+warning /home/guild/servers/cookiecutter_rust_backend/cookiecutter_project_slug/src/services/token.rs:52:64 unnecessary map of the identity function

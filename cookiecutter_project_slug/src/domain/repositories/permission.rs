@@ -30,6 +30,7 @@ pub trait PermissionRepository: Send + Sync {
         &self,
         params: PermissionQueryParams,
     ) -> RepositoryResult<ResultPaging<Permission>>;
-    async fn get(&self, permission_id: Uuid) -> RepositoryResult<Permission>;
+    async fn get(&self, permission_id: Uuid) -> RepositoryResult<Option<Permission>>;
+    async fn get_by_name(&self, permission_name: String) -> RepositoryResult<Option<Permission>>;
     async fn delete(&self, permission_id: Uuid) -> RepositoryResult<()>;
 }

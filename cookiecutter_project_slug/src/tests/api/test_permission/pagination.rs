@@ -6,7 +6,7 @@ mod test_item_pagination {
 
     use crate::tests::api::helper::{make_request, ApiRequest};
     use crate::tests::api::setup::spawn_app;
-    use crate::tests::api::test_role::aa_config::{
+    use crate::tests::api::test_permission::aa_config::{
         get_pagination_data_10, response_unwrap_pagination, SCOPE,
     };
 

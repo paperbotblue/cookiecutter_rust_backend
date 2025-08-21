@@ -5,7 +5,7 @@ mod test_item_crud {
     use serde_json::json;
 
     use crate::tests::api::helper::{make_request, ApiRequest};
-    use crate::tests::api::test_role::aa_config::{
+    use crate::tests::api::test_permission::aa_config::{
         response_unwrap_dto, response_unwrap_pagination, CREATE_REQUEST_BODY, SCOPE, TEST_DATA_DTO,
     };
 

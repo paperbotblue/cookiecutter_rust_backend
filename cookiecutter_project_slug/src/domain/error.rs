@@ -52,8 +52,11 @@ impl std::fmt::Display for ApiError {
 }
 
 impl actix_web::ResponseError for ApiError {
+    fn status_code(&self) -> StatusCode {
+        StatusCode::from_u16(self.0.code).unwrap()
+    }
     fn error_response(&self) -> actix_web::HttpResponse {
-        actix_web::HttpResponse::BadRequest().json(&self.0)
+        HttpResponse::build(self.status_code()).json(&self.0)
     }
 }
 

@@ -5,7 +5,7 @@ use crate::api::controllers::token_handler::{
 use actix_web::web;
 
 pub fn refresh_token_scope() -> actix_web::Scope {
-    web::scope("/refresh_token")
+    web::scope("/tokens")
         .route("", web::post().to(create_refresh_token_handler))
         .route("/update", web::post().to(update_refresh_token_handler))
         .route("", web::get().to(list_refresh_tokens_handler))

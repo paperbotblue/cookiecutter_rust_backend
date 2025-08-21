@@ -1,4 +1,5 @@
 use crate::api::dto::token::{CreateTokenDTO, TokenDTO, UpdateTokenDTO};
+use crate::api::dto::wapper_uuid::UuidParam;
 use crate::domain::error::{ApiError, CommonError};
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::token::TokenQueryParams;
@@ -56,16 +57,16 @@ pub async fn list_refresh_tokens_handler(
 
 pub async fn get_refresh_token_handler(
     refresh_token_service: web::Data<dyn TokenService>,
-    params: web::Path<Uuid>,
+    params: UuidParam,
 ) -> Result<web::Json<TokenDTO>, ApiError> {
-    let refresh_token = refresh_token_service.get(params.into_inner()).await?;
+    let refresh_token = refresh_token_service.get(params.0).await?;
     Ok(web::Json(refresh_token.into()))
 }
 
 pub async fn delete_refresh_token_handler(
     refresh_token_service: web::Data<dyn TokenService>,
-    params: web::Path<Uuid>,
+    params: UuidParam,
 ) -> Result<HttpResponse, ApiError> {
-    refresh_token_service.delete(params.into_inner()).await?;
+    refresh_token_service.delete(params.0).await?;
     Ok(HttpResponse::NoContent().finish())
 }

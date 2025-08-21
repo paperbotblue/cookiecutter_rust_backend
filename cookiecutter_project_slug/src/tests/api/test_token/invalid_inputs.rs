@@ -7,8 +7,8 @@ mod test_item_invalid_inputs {
 
     use crate::tests::api::{
         helper::{make_request, ApiRequest},
-        test_role::aa_config::{
-            INVALID_DATA_EMPTY_DATA, INVALID_DATA_NO_DESCRIPTION, INVALID_DATA_NO_NAME, SCOPE,
+        test_token::aa_config::{
+            INVALID_DATA_EMPTY_DATA, INVALID_DATA_NO_CLIENT_TYPE, INVALID_DATA_NO_TOKEN, SCOPE,
         },
     };
 
@@ -18,7 +18,7 @@ mod test_item_invalid_inputs {
 
         let resp = make_request(
             &client,
-            ApiRequest::Create(INVALID_DATA_NO_NAME.clone()),
+            ApiRequest::Create(INVALID_DATA_NO_TOKEN.clone()),
             &SCOPE,
         )
         .await;
@@ -38,7 +38,7 @@ mod test_item_invalid_inputs {
 
         let resp = make_request(
             &client,
-            ApiRequest::Create(INVALID_DATA_NO_DESCRIPTION.clone()),
+            ApiRequest::Create(INVALID_DATA_NO_CLIENT_TYPE.clone()),
             &SCOPE,
         )
         .await;

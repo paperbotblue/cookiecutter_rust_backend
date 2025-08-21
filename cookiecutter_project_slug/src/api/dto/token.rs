@@ -29,7 +29,7 @@ pub struct UpdateTokenDTO {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TokenDTO {
     pub id: Uuid,
     pub client_id: Uuid,

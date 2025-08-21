@@ -3,6 +3,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::domain::error::CommonError;
+use crate::domain::errors::permission_errors::PermissionError;
 use crate::domain::models::permission::{CreatePermission, Permission, UpdatePermission};
 use crate::domain::repositories::permission::PermissionQueryParams;
 use crate::domain::repositories::permission::PermissionRepository;
@@ -23,6 +24,15 @@ impl PermissionServiceImpl {
 #[async_trait]
 impl PermissionService for PermissionServiceImpl {
     async fn create(&self, item: CreatePermission) -> Result<Permission, CommonError> {
+        if let Some(_) = self
+            .repository
+            .get_by_name(item.name.clone())
+            .await
+            .map_err(|e| PermissionError::InternalServerError(e.message))?
+        {
+            return Err(PermissionError::PermissionAlreadyExists.into());
+        }
+
         self.repository.create(item).await.map_err(|e| e.into())
     }
 
@@ -38,10 +48,21 @@ impl PermissionService for PermissionServiceImpl {
     }
 
     async fn get(&self, item_id: Uuid) -> Result<Permission, CommonError> {
-        self.repository.get(item_id).await.map_err(|e| e.into())
+        let permission = self
+            .repository
+            .get(item_id)
+            .await
+            .map_err(|e| PermissionError::InternalServerError(e.message))?;
+        match permission {
+            Some(permission) => Ok(permission),
+            None => Err(PermissionError::PermissionDoesNotExist.into()),
+        }
     }
 
     async fn delete(&self, item_id: Uuid) -> Result<(), CommonError> {
-        self.repository.delete(item_id).await.map_err(|e| e.into())
+        self.repository
+            .delete(item_id)
+            .await
+            .map_err(|e| PermissionError::InternalServerError(e.message.to_string()).into())
     }
 }

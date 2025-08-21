@@ -5,7 +5,7 @@ mod test_item_crud {
     use serde_json::json;
 
     use crate::tests::api::helper::{make_request, ApiRequest};
-    use crate::tests::api::test_role::aa_config::{
+    use crate::tests::api::test_token::aa_config::{
         response_unwrap_dto, response_unwrap_pagination, CREATE_REQUEST_BODY, SCOPE, TEST_DATA_DTO,
     };
 
@@ -23,8 +23,8 @@ mod test_item_crud {
         assert!(resp.status().is_success());
 
         let item = response_unwrap_dto(resp).await;
-        assert_eq!(item.name, TEST_DATA_DTO.name);
-        assert_eq!(item.description, TEST_DATA_DTO.description);
+        assert_eq!(item.client_id, TEST_DATA_DTO.client_id);
+        assert_eq!(item.token, TEST_DATA_DTO.token);
 
         // GET item with id
         let resp = make_request(&client, ApiRequest::GetOne(item.id.to_string()), &SCOPE).await;

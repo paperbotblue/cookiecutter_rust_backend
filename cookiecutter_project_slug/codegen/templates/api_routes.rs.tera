@@ -5,13 +5,29 @@ use crate::api::controllers::{{type_snake}}_handler::{
     get_{{type_snake}}_handler,
     list_{{type_snake}}s_handler,
 };
-use actix_web::web;
 
-pub fn {{type_snake}}_scope() -> actix_web::Scope {
-    web::scope("/{{type_snake}}s")
-        .route("", web::post().to(create_{{type_snake}}_handler))
-        .route("/update", web::post().to(update_{{type_snake}}_handler))
-        .route("", web::get().to(list_{{type_snake}}s_handler))
-        .route("/{id}", web::get().to(get_{{type_snake}}_handler))
-        .route("/{id}", web::delete().to(delete_{{type_snake}}_handler))
+use actix_web::{
+    middleware::from_fn,
+    web::{self, ServiceConfig},
+};
+
+pub fn {{type_snake}}_config(cfg: &mut ServiceConfig) {
+    cfg.service(
+        web::scope("/{{type_snake}}s")
+            // Uncomment if you need a middleware for this scope
+            // .wrap(from_fn(|req, next| async move {
+            //     check_permission_middleware(req, next, "admin").await
+            // }))
+            .service(
+                web::resource("")
+                    .route(web::post().to(create_{{type_snake}}_handler))
+                    .route(web::get().to(list_{{type_snake}}s_handler)),
+            )
+            .service(web::resource("/update").route(web::post().to(update_{{type_snake}}_handler)))
+            .service(
+                web::resource("/{id}")
+                    .route(web::get().to(get_{{type_snake}}_handler))
+                    .route(web::delete().to(delete_{{type_snake}}_handler)),
+            ),
+    );
 }

@@ -71,17 +71,21 @@ impl TokenRepository for TokenDieselRepository {
         })
     }
 
-    async fn get(&self, item_id: Uuid) -> RepositoryResult<Token> {
+    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<Token>> {
         use crate::infrastructure::schema::refresh_tokens::dsl::{id, refresh_tokens};
         let mut conn = self.pool.get().unwrap();
-        run(move || {
+        let result = run(move || {
             refresh_tokens
                 .filter(id.eq(item_id))
                 .first::<TokenDiesel>(&mut conn)
         })
-        .await
-        .map_err(|e| DieselRepositoryError::from(e).into_inner())
-        .map(|v| v.into())
+        .await;
+
+        match result {
+            Ok(v) => Ok(Some(v.into())),
+            Err(actix_threadpool::BlockingError::Error(DieselError::NotFound)) => Ok(None),
+            Err(e) => Err(DieselRepositoryError::from(e).into_inner()),
+        }
     }
     async fn get_by_client_id(&self, item_id: Uuid) -> RepositoryResult<Option<Token>> {
         use crate::infrastructure::schema::refresh_tokens::dsl::{client_id, refresh_tokens};

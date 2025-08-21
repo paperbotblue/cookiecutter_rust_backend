@@ -72,13 +72,36 @@ impl RoleRepository for RoleDieselRepository {
         })
     }
 
-    async fn get(&self, item_id: Uuid) -> RepositoryResult<Role> {
+    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<Role>> {
         use crate::infrastructure::schema::roles::dsl::{id, roles};
+
         let mut conn = self.pool.get().unwrap();
-        run(move || roles.filter(id.eq(item_id)).first::<RoleDiesel>(&mut conn))
-            .await
-            .map_err(|e| DieselRepositoryError::from(e).into_inner())
-            .map(|v| v.into())
+
+        run(move || {
+            roles
+                .filter(id.eq(item_id))
+                .first::<RoleDiesel>(&mut conn)
+                .optional() // <- this turns NotFound into None
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into()))
+    }
+
+    async fn get_by_role_name(&self, role_name: String) -> RepositoryResult<Option<Role>> {
+        use crate::infrastructure::schema::roles::dsl::{name, roles};
+
+        let mut conn = self.pool.get().unwrap();
+
+        run(move || {
+            roles
+                .filter(name.eq(role_name))
+                .first::<RoleDiesel>(&mut conn)
+                .optional() // <- this turns NotFound into None
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into()))
     }
 
     async fn get_all_permissions_by_role_id(

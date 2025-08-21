@@ -7,7 +7,7 @@ mod test_item_invalid_inputs {
 
     use crate::tests::api::{
         helper::{make_request, ApiRequest},
-        test_role::aa_config::{
+        test_permission::aa_config::{
             INVALID_DATA_EMPTY_DATA, INVALID_DATA_NO_DESCRIPTION, INVALID_DATA_NO_NAME, SCOPE,
         },
     };

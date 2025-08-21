@@ -168,6 +168,10 @@ fn main() {
             format!("{}/domain/repositories/{}.rs", args.output_dir, type_snake),
         ),
         (
+            "domain_error.rs.tera",
+            format!("{}/domain/errors/{}_errors.rs", args.output_dir, type_snake),
+        ),
+        (
             "infrastructure_repository.rs.tera",
             format!(
                 "{}/infrastructure/repositories/{}.rs",
@@ -199,6 +203,14 @@ fn main() {
         (
             "api_routes.rs.tera",
             format!("{}/api/routes/{}.rs", args.output_dir, type_snake),
+        ),
+        (
+            "api_mapper.rs.tera",
+            format!("{}/api/mappers/{}.rs", args.output_dir, type_snake),
+        ),
+        (
+            "api_dto_validator.rs.tera",
+            format!("{}/api/dto/validators/{}.rs", args.output_dir, type_snake),
         ),
     ];
 

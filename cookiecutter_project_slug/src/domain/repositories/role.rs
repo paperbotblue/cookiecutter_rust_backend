@@ -28,7 +28,8 @@ pub trait RoleRepository: Send + Sync {
     async fn create(&self, new_role: &CreateRole) -> RepositoryResult<Role>;
     async fn update(&self, update_role: &UpdateRole) -> RepositoryResult<Role>;
     async fn list(&self, params: RoleQueryParams) -> RepositoryResult<ResultPaging<Role>>;
-    async fn get(&self, role_id: Uuid) -> RepositoryResult<Role>;
+    async fn get(&self, role_id: Uuid) -> RepositoryResult<Option<Role>>;
+    async fn get_by_role_name(&self, role_name: String) -> RepositoryResult<Option<Role>>;
     async fn get_all_permissions_by_role_id(
         &self,
         role_id_val: Uuid,

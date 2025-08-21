@@ -1,5 +1,7 @@
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
+
+use crate::api::dto::wapper_uuid::UuidParam;
 use crate::api::dto::{{type_snake}}::{Create{{type_name}}DTO, {{type_name}}DTO, Update{{type_name}}DTO};
 use crate::domain::error::ApiError;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
@@ -32,7 +34,7 @@ pub async fn list_{{type_snake}}s_handler(
 
 pub async fn get_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: web::Path<Uuid>,
+    params: UuidParam,
 ) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
     let {{type_snake}} = {{type_snake}}_service.get(params.into_inner()).await?;
     Ok(web::Json({{type_snake}}.into()))
@@ -40,7 +42,7 @@ pub async fn get_{{type_snake}}_handler(
 
 pub async fn delete_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: web::Path<Uuid>,
+    params: UuidParam,
 ) -> Result<HttpResponse, ApiError> {
     {{type_snake}}_service.delete(params.into_inner()).await?;
     Ok(HttpResponse::NoContent().finish())
