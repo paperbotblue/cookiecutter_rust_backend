@@ -1,35 +1,34 @@
 use actix_threadpool::run;
 use async_trait::async_trait;
 use diesel::prelude::*;
-use diesel::result::Error as DieselError;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::models::token::{CreateToken, Token, UpdateToken};
+use crate::domain::models::refresh_token::{CreateRefreshToken, RefreshToken, UpdateRefreshToken};
+use crate::domain::repositories::refresh_token::RefreshTokenQueryParams;
+use crate::domain::repositories::refresh_token::RefreshTokenRepository;
 use crate::domain::repositories::repository::{QueryParams, RepositoryResult, ResultPaging};
-use crate::domain::repositories::token::TokenQueryParams;
-use crate::domain::repositories::token::TokenRepository;
 use crate::infrastructure::databases::postgresql::DBConn;
 use crate::infrastructure::error::DieselRepositoryError;
-use crate::infrastructure::models::token::{CreateTokenDiesel, TokenDiesel, UpdateTokenDiesel};
+use crate::infrastructure::models::refresh_token::{CreateRefreshTokenDiesel, RefreshTokenDiesel, UpdateRefreshTokenDiesel};
 
-pub struct TokenDieselRepository {
+pub struct RefreshTokenDieselRepository {
     pub pool: Arc<DBConn>,
 }
 
-impl TokenDieselRepository {
+impl RefreshTokenDieselRepository {
     pub fn new(db: Arc<DBConn>) -> Self {
-        TokenDieselRepository { pool: db }
+        RefreshTokenDieselRepository { pool: db }
     }
 }
 
 #[async_trait]
-impl TokenRepository for TokenDieselRepository {
-    async fn create(&self, new_item: &CreateToken) -> RepositoryResult<Token> {
+impl RefreshTokenRepository for RefreshTokenDieselRepository {
+    async fn create(&self, new_item: &CreateRefreshToken) -> RepositoryResult<RefreshToken> {
         use crate::infrastructure::schema::refresh_tokens::dsl::refresh_tokens;
-        let new_item_diesel: CreateTokenDiesel = new_item.into();
+        let new_item_diesel: CreateRefreshTokenDiesel = new_item.into();
         let mut conn = self.pool.get().unwrap();
-        let result: TokenDiesel = run(move || {
+        let result: RefreshTokenDiesel = run(move || {
             diesel::insert_into(refresh_tokens)
                 .values(new_item_diesel)
                 .get_result(&mut conn)
@@ -39,12 +38,12 @@ impl TokenRepository for TokenDieselRepository {
         Ok(result.into())
     }
 
-    async fn update(&self, new_item: &UpdateToken) -> RepositoryResult<Token> {
+    async fn update(&self, new_item: &UpdateRefreshToken) -> RepositoryResult<RefreshToken> {
         use crate::infrastructure::schema::refresh_tokens::dsl::{id as target_id, refresh_tokens};
-        let new_item_diesel: UpdateTokenDiesel = new_item.into();
+        let new_item_diesel: UpdateRefreshTokenDiesel = new_item.into();
         let id_val: Uuid = new_item.id;
         let mut conn = self.pool.get().unwrap();
-        let result: TokenDiesel = run(move || {
+        let result: RefreshTokenDiesel = run(move || {
             diesel::update(refresh_tokens.filter(target_id.eq(id_val)))
                 .set(new_item_diesel)
                 .get_result(&mut conn)
@@ -54,13 +53,13 @@ impl TokenRepository for TokenDieselRepository {
         Ok(result.into())
     }
 
-    async fn list(&self, params: TokenQueryParams) -> RepositoryResult<ResultPaging<Token>> {
+    async fn list(&self, params: RefreshTokenQueryParams) -> RepositoryResult<ResultPaging<RefreshToken>> {
         use crate::infrastructure::schema::refresh_tokens::dsl::refresh_tokens;
         let pool = self.pool.clone();
         let builder = refresh_tokens.limit(params.limit()).offset(params.offset());
         let result = run(move || {
             let mut conn = pool.get().unwrap();
-            builder.load::<TokenDiesel>(&mut conn)
+            builder.load::<RefreshTokenDiesel>(&mut conn)
         })
         .await
         .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
@@ -71,37 +70,18 @@ impl TokenRepository for TokenDieselRepository {
         })
     }
 
-    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<Token>> {
+    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<RefreshToken>> {
         use crate::infrastructure::schema::refresh_tokens::dsl::{id, refresh_tokens};
         let mut conn = self.pool.get().unwrap();
-        let result = run(move || {
+        run(move || {
             refresh_tokens
                 .filter(id.eq(item_id))
-                .first::<TokenDiesel>(&mut conn)
+                .first::<RefreshTokenDiesel>(&mut conn)
+                .optional()
         })
-        .await;
-
-        match result {
-            Ok(v) => Ok(Some(v.into())),
-            Err(actix_threadpool::BlockingError::Error(DieselError::NotFound)) => Ok(None),
-            Err(e) => Err(DieselRepositoryError::from(e).into_inner()),
-        }
-    }
-    async fn get_by_client_id(&self, item_id: Uuid) -> RepositoryResult<Option<Token>> {
-        use crate::infrastructure::schema::refresh_tokens::dsl::{client_id, refresh_tokens};
-        let mut conn = self.pool.get().unwrap();
-        let result = run(move || {
-            refresh_tokens
-                .filter(client_id.eq(item_id))
-                .first::<TokenDiesel>(&mut conn)
-        })
-        .await;
-
-        match result {
-            Ok(v) => Ok(Some(v.into())),
-            Err(actix_threadpool::BlockingError::Error(DieselError::NotFound)) => Ok(None),
-            Err(e) => Err(DieselRepositoryError::from(e).into_inner()),
-        }
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
     }
 
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {
@@ -113,3 +93,4 @@ impl TokenRepository for TokenDieselRepository {
         Ok(())
     }
 }
+

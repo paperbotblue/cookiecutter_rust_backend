@@ -1,0 +1,1 @@
+DatabaseError(Unknown, "relation \"permissions\" does not exist")

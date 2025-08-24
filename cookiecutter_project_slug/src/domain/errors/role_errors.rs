@@ -1,5 +1,5 @@
-use crate::domain::error::CommonError;
-use crate::utils::append_to_file::append_to_file;
+use crate::domain::error::{ApiError, RepositoryError};
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -10,7 +10,7 @@ pub enum RoleError {
     RoleDoesNotExists,
     RoleAlreadyExist,
     RoleNotAuthorised,
-    InternalServerError(String),
+    InternalServerError(RepositoryError),
 }
 
 // Implement `Display`
@@ -29,25 +29,25 @@ impl fmt::Display for RoleError {
                 write!(f, "Role Creation Error: Already Exist")
             }
             RoleError::InternalServerError(error) => {
-                write!(f, "Internal Server Error(MiddlewareError): {}", error)
+                write!(f, "Internal Server Error(RoleError): {}", &error.message)
             }
         }
     }
 }
 
-impl From<RoleError> for CommonError {
+impl From<RoleError> for ApiError {
     fn from(value: RoleError) -> Self {
         let code = match value {
             RoleError::RoleAlreadyExist => ApiResponseCode::Conflict,
             RoleError::RoleDoesNotExists => ApiResponseCode::NotFound,
             RoleError::RoleNotAuthorised => ApiResponseCode::Forbidden,
             RoleError::InternalServerError(ref e) => {
-                append_to_file("../../../error_logs.txt", e);
+                save_error(&e.message);
                 ApiResponseCode::InternalServerError
             }
         };
 
-        CommonError {
+        Self {
             message: value.to_string(),
             code: code.status_code(),
         }

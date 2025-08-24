@@ -23,7 +23,6 @@ pub fn validate_{{type_snake}}_fields<'de, D: Deserializer<'de>>(
     //     ));
     // }
 
-  todo!();
 
     Ok(())
 }

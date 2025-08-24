@@ -1,6 +1,6 @@
 use super::response_code::ApiResponseCode;
-use crate::domain::error::CommonError;
-use crate::utils::append_to_file::append_to_file;
+use crate::domain::error::ApiError;
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -40,7 +40,7 @@ impl fmt::Display for MiddlewareError<'_> {
     }
 }
 
-impl From<MiddlewareError<'_>> for CommonError {
+impl From<MiddlewareError<'_>> for ApiError {
     fn from(value: MiddlewareError) -> Self {
         let code = match value {
             MiddlewareError::AuthHeaderDoesNotExist => ApiResponseCode::Forbidden,
@@ -48,12 +48,12 @@ impl From<MiddlewareError<'_>> for CommonError {
             MiddlewareError::InvalidTokenFormat => ApiResponseCode::Forbidden,
             MiddlewareError::UnableToCallNext => ApiResponseCode::InternalServerError,
             MiddlewareError::InternalServerError(e) => {
-                append_to_file("../../../error_logs.txt", e);
+                save_error(e);
                 ApiResponseCode::InternalServerError
             }
         };
 
-        CommonError {
+        ApiError {
             message: value.to_string(),
             code: code.status_code(),
         }

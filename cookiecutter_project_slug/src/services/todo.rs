@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::error::CommonError;
+use crate::domain::error::ApiError;
 use crate::domain::errors::todo_errors::TodoError;
 use crate::domain::models::todo::{CreateTodo, Todo, UpdateTodo};
 use crate::domain::repositories::repository::ResultPaging;
@@ -23,35 +23,35 @@ impl TodoServiceImpl {
 
 #[async_trait]
 impl TodoService for TodoServiceImpl {
-    async fn create(&self, mut item: CreateTodo) -> Result<Todo, CommonError> {
+    async fn create(&self, item: CreateTodo) -> Result<Todo, ApiError> {
         self.repository
-            .create(&mut item)
+            .create(&item)
             .await
             .map_err(|e| TodoError::InternalServerError(e.message.to_string()).into())
     }
 
-    async fn update(&self, mut item: UpdateTodo) -> Result<Todo, CommonError> {
+    async fn update(&self, item: UpdateTodo) -> Result<Todo, ApiError> {
         self.repository
-            .update(&mut item)
+            .update(&item)
             .await
             .map_err(|e| TodoError::InternalServerError(e.message.to_string()).into())
     }
 
-    async fn list(&self, params: TodoQueryParams) -> Result<ResultPaging<Todo>, CommonError> {
+    async fn list(&self, params: TodoQueryParams) -> Result<ResultPaging<Todo>, ApiError> {
         self.repository
             .list(params)
             .await
             .map_err(|e| TodoError::InternalServerError(e.message.to_string()).into())
     }
 
-    async fn get(&self, item_id: Uuid) -> Result<Todo, CommonError> {
+    async fn get(&self, item_id: Uuid) -> Result<Todo, ApiError> {
         self.repository
             .get(item_id)
             .await
             .map_err(|e| TodoError::InternalServerError(e.message.to_string()).into())
     }
 
-    async fn delete(&self, item_id: Uuid) -> Result<(), CommonError> {
+    async fn delete(&self, item_id: Uuid) -> Result<(), ApiError> {
         self.repository
             .delete(item_id)
             .await

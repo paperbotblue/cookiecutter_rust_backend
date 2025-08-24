@@ -1,7 +1,4 @@
-use actix_web::{
-    middleware::from_fn,
-    web::{self, ServiceConfig},
-};
+use actix_web::web::{self, ServiceConfig};
 
 use crate::api::controllers::permission_handler::{
     create_permission_handler, delete_permission_handler, get_permission_handler,

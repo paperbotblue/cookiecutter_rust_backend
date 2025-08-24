@@ -1,16 +1,16 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::domain::error::CommonError;
+use crate::domain::errors::{{type_snake}}_errors::{{type_name}}Error;
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, {{type_name}}, Update{{type_name}}};
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
 
 #[async_trait]
 pub trait {{type_name}}Service: 'static + Sync + Send {
-    async fn create(&self, {{type_snake}}: Create{{type_name}}) -> Result<{{type_name}}, CommonError>;
-    async fn update(&self, {{type_snake}}: Update{{type_name}}) -> Result<{{type_name}}, CommonError>;
-    async fn list(&self, params: {{type_name}}QueryParams) -> Result<ResultPaging<{{type_name}}>, CommonError>;
-    async fn get(&self, {{type_snake}}_id: Uuid) -> Result<{{type_name}}, CommonError>;
-    async fn delete(&self, {{type_snake}}_id: Uuid) -> Result<(), CommonError>;
+    async fn create(&self, {{type_snake}}: Create{{type_name}}) -> Result<{{type_name}}, {{type_name}}Error>;
+    async fn update(&self, {{type_snake}}: Update{{type_name}}) -> Result<{{type_name}}, {{type_name}}Error>;
+    async fn list(&self, params: {{type_name}}QueryParams) -> Result<ResultPaging<{{type_name}}>, {{type_name}}Error>;
+    async fn get(&self, {{type_snake}}_id: Uuid) -> Result<{{type_name}}, {{type_name}}Error>;
+    async fn delete(&self, {{type_snake}}_id: Uuid) -> Result<(), {{type_name}}Error>;
 }

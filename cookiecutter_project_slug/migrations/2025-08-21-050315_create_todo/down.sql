@@ -1,2 +1,4 @@
 -- This file should undo anything in `up.sql`
-DELETE TABLE todos;
+DROP TABLE todos;
+
+DROP INDEX IF EXISTS idx_todos_name;

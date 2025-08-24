@@ -1,20 +1,20 @@
-use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use actix_web::{http::StatusCode, HttpResponse};
 use serde::Serialize;
-use serde_json::json;
+use uuid::Error as UuidError;
 
 #[derive(Debug, Serialize)]
-pub struct CommonError {
+pub struct ApiError {
     pub message: String,
     pub code: u16,
 }
 
-impl std::fmt::Display for CommonError {
+impl std::fmt::Display for ApiError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Error: {}, Code: {}", self.message, self.code)
     }
 }
 
-impl CommonError {
+impl ApiError {
     pub fn new(message: impl Into<String>, code: u16) -> Self {
         Self {
             message: message.into(),
@@ -23,40 +23,12 @@ impl CommonError {
     }
 }
 
-impl ResponseError for CommonError {
+impl actix_web::ResponseError for ApiError {
     fn status_code(&self) -> StatusCode {
         StatusCode::from_u16(self.code).unwrap()
     }
-    fn error_response(&self) -> actix_web::HttpResponse<actix_web::body::BoxBody> {
-        let response = json!({
-            "status": self.status_code().as_u16(),
-            "response": self.message
-        });
-        HttpResponse::build(self.status_code()).json(response)
-    }
-}
-
-#[derive(Debug)]
-pub struct ApiError(CommonError);
-
-impl From<CommonError> for ApiError {
-    fn from(error: CommonError) -> ApiError {
-        ApiError(error)
-    }
-}
-
-impl std::fmt::Display for ApiError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl actix_web::ResponseError for ApiError {
-    fn status_code(&self) -> StatusCode {
-        StatusCode::from_u16(self.0.code).unwrap()
-    }
     fn error_response(&self) -> actix_web::HttpResponse {
-        HttpResponse::build(self.status_code()).json(&self.0)
+        HttpResponse::build(self.status_code()).json(&self.message)
     }
 }
 
@@ -65,7 +37,7 @@ pub struct RepositoryError {
     pub message: String,
 }
 
-impl From<RepositoryError> for CommonError {
+impl From<RepositoryError> for ApiError {
     fn from(value: RepositoryError) -> Self {
         Self {
             message: value.message,
@@ -74,7 +46,16 @@ impl From<RepositoryError> for CommonError {
     }
 }
 
-impl From<jsonwebtoken::errors::Error> for CommonError {
+impl From<UuidError> for ApiError {
+    fn from(value: UuidError) -> Self {
+        Self {
+            message: value.to_string(),
+            code: 400,
+        }
+    }
+}
+
+impl From<jsonwebtoken::errors::Error> for ApiError {
     fn from(value: jsonwebtoken::errors::Error) -> Self {
         Self {
             message: value.to_string(),

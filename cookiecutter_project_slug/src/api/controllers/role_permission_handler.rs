@@ -1,5 +1,6 @@
+use std::str::FromStr;
+
 use crate::api::dto::role_permission::{CreateRolePermissionDTO, RolePermissionDTO};
-use crate::api::dto::wapper_uuid::UuidParam;
 use crate::domain::error::ApiError;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::role_permission::RolePermissionQueryParams;
@@ -27,22 +28,20 @@ pub async fn list_role_permissions_handler(
 
 pub async fn get_role_permission_handler(
     role_permission_service: web::Data<dyn RolePermissionService>,
-    params: web::Path<(UuidParam, UuidParam)>,
+    params: web::Path<(Uuid, Uuid)>,
 ) -> Result<web::Json<RolePermissionDTO>, ApiError> {
     let (role_id, permission_id) = params.into_inner();
-    let role_permission = role_permission_service
-        .get(role_id.0, permission_id.0)
-        .await?;
+    let role_permission = role_permission_service.get(role_id, permission_id).await?;
     Ok(web::Json(role_permission.into()))
 }
 
 pub async fn delete_role_permission_handler(
     role_permission_service: web::Data<dyn RolePermissionService>,
-    params: web::Path<(UuidParam, UuidParam)>,
+    params: web::Path<(String, String)>,
 ) -> Result<HttpResponse, ApiError> {
-    let (role_id, permission_id) = params.into_inner();
+    let (role_id, permission_id) = (Uuid::from_str(&params.0)?, Uuid::from_str(&params.1)?);
     role_permission_service
-        .delete(role_id.0, permission_id.0)
+        .delete(role_id, permission_id)
         .await?;
     Ok(HttpResponse::NoContent().finish())
 }

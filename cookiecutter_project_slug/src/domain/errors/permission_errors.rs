@@ -1,6 +1,6 @@
 use super::response_code::ApiResponseCode;
-use crate::domain::error::CommonError;
-use crate::utils::append_to_file::append_to_file;
+use crate::domain::error::{ApiError, RepositoryError};
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -9,7 +9,7 @@ pub enum PermissionError {
     PermissionAlreadyExists,
     PermissionDoesNotExist,
     PermissionNotAuthorised,
-    InternalServerError(String),
+    InternalServerError(RepositoryError),
 }
 
 // Implement `Display`
@@ -29,25 +29,29 @@ impl fmt::Display for PermissionError {
             }
 
             PermissionError::InternalServerError(error) => {
-                write!(f, "Internal Server Error(MiddlewareError): {}", error)
+                write!(
+                    f,
+                    "Internal Server Error(MiddlewareError): {}",
+                    error.message
+                )
             }
         }
     }
 }
 
-impl From<PermissionError> for CommonError {
+impl From<PermissionError> for ApiError {
     fn from(value: PermissionError) -> Self {
         let code = match value {
             PermissionError::PermissionNotAuthorised => ApiResponseCode::Forbidden,
             PermissionError::PermissionDoesNotExist => ApiResponseCode::NotFound,
             PermissionError::PermissionAlreadyExists => ApiResponseCode::Conflict,
             PermissionError::InternalServerError(ref e) => {
-                append_to_file("../../../error_logs.txt", e);
+                save_error(&e.message);
                 ApiResponseCode::InternalServerError
             }
         };
 
-        CommonError {
+        Self {
             message: value.to_string(),
             code: code.status_code(),
         }

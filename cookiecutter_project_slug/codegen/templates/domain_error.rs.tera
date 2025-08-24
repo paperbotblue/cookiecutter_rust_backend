@@ -1,6 +1,6 @@
 use super::response_code::ApiResponseCode;
-use crate::domain::error::CommonError;
-use crate::utils::append_to_file::append_to_file;
+use crate::domain::error::{ApiError, RepositoryError} ;
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -9,7 +9,7 @@ pub enum {{type_name}}Error {
     {{type_name}}AlreadyExists,
     {{type_name}}DoesNotExist,
     {{type_name}}NotAuthorised,
-    InternalServerError(String),
+    InternalServerError(RepositoryError),
 }
 
 // Implement `Display`
@@ -29,25 +29,25 @@ impl fmt::Display for {{type_name}}Error {
             }
 
             {{type_name}}Error::InternalServerError(error) => {
-                write!(f, "Internal Server Error(MiddlewareError): {}", error)
+                write!(f, "Internal Server Error({{type_name}}Error): {}", &error.message)
             }
         }
     }
 }
 
-impl From<{{type_name}}Error> for CommonError {
+impl From<{{type_name}}Error> for ApiError  {
     fn from(value: {{type_name}}Error) -> Self {
         let code = match value {
             {{type_name}}Error::{{type_name}}NotAuthorised => ApiResponseCode::Forbidden,
             {{type_name}}Error::{{type_name}}DoesNotExist => ApiResponseCode::NotFound,
             {{type_name}}Error::{{type_name}}AlreadyExists => ApiResponseCode::Conflict,
             {{type_name}}Error::InternalServerError(ref e) => {
-                append_to_file("../../../error_logs.txt", e);
+                save_error(&e.message);
                 ApiResponseCode::InternalServerError
             }
         };
 
-        CommonError {
+        ApiError  {
             message: value.to_string(),
             code: code.status_code(),
         }

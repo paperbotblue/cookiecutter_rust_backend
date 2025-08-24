@@ -27,7 +27,7 @@ pub trait {{type_name}}Repository: Send + Sync {
     async fn create(&self, new_{{type_snake}}: &Create{{type_name}}) -> RepositoryResult<{{type_name}}>;
     async fn update(&self, update_{{type_snake}}: &Update{{type_name}}) -> RepositoryResult<{{type_name}}>;
     async fn list(&self, params: {{type_name}}QueryParams) -> RepositoryResult<ResultPaging<{{type_name}}>>;
-    async fn get(&self, {{type_snake}}_id: Uuid) -> RepositoryResult<{{type_name}}>;
+    async fn get(&self, {{type_snake}}_id: Uuid) -> RepositoryResult<Option<{{type_name}}>>;
     async fn delete(&self, {{type_snake}}_id: Uuid) -> RepositoryResult<()>;
 }
 

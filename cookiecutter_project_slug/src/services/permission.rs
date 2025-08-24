@@ -2,7 +2,6 @@ use async_trait::async_trait;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::error::CommonError;
 use crate::domain::errors::permission_errors::PermissionError;
 use crate::domain::models::permission::{CreatePermission, Permission, UpdatePermission};
 use crate::domain::repositories::permission::PermissionQueryParams;
@@ -23,46 +22,48 @@ impl PermissionServiceImpl {
 
 #[async_trait]
 impl PermissionService for PermissionServiceImpl {
-    async fn create(&self, item: CreatePermission) -> Result<Permission, CommonError> {
-        if let Some(_) = self
-            .repository
-            .get_by_name(item.name.clone())
-            .await
-            .map_err(|e| PermissionError::InternalServerError(e.message))?
-        {
-            return Err(PermissionError::PermissionAlreadyExists.into());
-        }
+    async fn create(&self, item: CreatePermission) -> Result<Permission, PermissionError> {
+        match self.repository.get_by_name(item.name.clone()).await {
+            Ok(Some(_)) => return Err(PermissionError::PermissionAlreadyExists),
+            Ok(None) => {}
+            Err(err) => return Err(PermissionError::InternalServerError(err)),
+        };
 
-        self.repository.create(item).await.map_err(|e| e.into())
+        match self.repository.create(item).await {
+            Ok(permission) => Ok(permission),
+            Err(err) => Err(PermissionError::InternalServerError(err)),
+        }
     }
 
-    async fn update(&self, item: UpdatePermission) -> Result<Permission, CommonError> {
-        self.repository.update(item).await.map_err(|e| e.into())
+    async fn update(&self, item: UpdatePermission) -> Result<Permission, PermissionError> {
+        match self.repository.update(item).await {
+            Ok(result) => Ok(result),
+            Err(err) => Err(PermissionError::InternalServerError(err)),
+        }
     }
 
     async fn list(
         &self,
         params: PermissionQueryParams,
-    ) -> Result<ResultPaging<Permission>, CommonError> {
-        self.repository.list(params).await.map_err(|e| e.into())
-    }
-
-    async fn get(&self, item_id: Uuid) -> Result<Permission, CommonError> {
-        let permission = self
-            .repository
-            .get(item_id)
-            .await
-            .map_err(|e| PermissionError::InternalServerError(e.message))?;
-        match permission {
-            Some(permission) => Ok(permission),
-            None => Err(PermissionError::PermissionDoesNotExist.into()),
+    ) -> Result<ResultPaging<Permission>, PermissionError> {
+        match self.repository.list(params).await {
+            Ok(result) => Ok(result),
+            Err(err) => Err(PermissionError::InternalServerError(err)),
         }
     }
 
-    async fn delete(&self, item_id: Uuid) -> Result<(), CommonError> {
-        self.repository
-            .delete(item_id)
-            .await
-            .map_err(|e| PermissionError::InternalServerError(e.message.to_string()).into())
+    async fn get(&self, item_id: Uuid) -> Result<Permission, PermissionError> {
+        match self.repository.get(item_id).await {
+            Ok(Some(permission)) => Ok(permission),
+            Ok(None) => Err(PermissionError::PermissionDoesNotExist),
+            Err(err) => Err(PermissionError::InternalServerError(err)),
+        }
+    }
+
+    async fn delete(&self, item_id: Uuid) -> Result<(), PermissionError> {
+        match self.repository.delete(item_id).await {
+            Ok(result) => Ok(result),
+            Err(err) => Err(PermissionError::InternalServerError(err)),
+        }
     }
 }

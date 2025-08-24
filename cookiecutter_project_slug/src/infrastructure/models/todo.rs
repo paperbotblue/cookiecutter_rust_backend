@@ -2,7 +2,6 @@ use diesel::prelude::*;
 use crate::domain::models::todo::{CreateTodo, Todo, UpdateTodo};
 use crate::infrastructure::schema::todos;
 use uuid::Uuid;
-use chrono::{Utc, DateTime};
 
 #[derive(Queryable)]
 pub struct TodoDiesel {

@@ -1,5 +1,6 @@
+use std::str::FromStr;
+
 use crate::api::dto::role::{CreateRoleDTO, RoleDTO, UpdateRoleDTO};
-use crate::api::dto::wapper_uuid::UuidParam;
 use crate::domain::error::ApiError;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::role::RoleQueryParams;
@@ -33,16 +34,16 @@ pub async fn list_roles_handler(
 
 pub async fn get_role_handler(
     role_service: web::Data<dyn RoleService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<web::Json<RoleDTO>, ApiError> {
-    let role = role_service.get(params.0).await?;
+    let role = role_service.get(Uuid::from_str(&params)?).await?;
     Ok(web::Json(role.into()))
 }
 
 pub async fn delete_role_handler(
     role_service: web::Data<dyn RoleService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<HttpResponse, ApiError> {
-    role_service.delete(params.0).await?;
+    role_service.delete(Uuid::from_str(&params)?).await?;
     Ok(HttpResponse::NoContent().finish())
 }

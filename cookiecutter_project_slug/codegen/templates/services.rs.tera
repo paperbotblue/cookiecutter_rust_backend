@@ -2,13 +2,12 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::domain::error::CommonError;
+use crate::domain::errors::{{type_snake}}_errors::{{type_name}}Error ;
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, {{type_name}}, Update{{type_name}}};
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}Repository;
 use crate::domain::services::{{type_snake}}::{{type_name}}Service;
-use crate::domain::errors::{{type_snake}}_errors::{{type_name}}Error;
 
 #[derive(Clone)]
 pub struct {{type_name}}ServiceImpl {
@@ -23,38 +22,49 @@ impl {{type_name}}ServiceImpl {
 
 #[async_trait]
 impl {{type_name}}Service for {{type_name}}ServiceImpl {
-    async fn create(&self, mut item: Create{{type_name}}) -> Result<{{type_name}}, CommonError> {
-        self.repository
-            .create(&mut item)
-            .await
-            .map_err(|e| {{type_name}}Error::InternalServerError(e.message.to_string()).into())
+    async fn create(&self, item: Create{{type_name}}) -> Result<{{type_name}}, {{type_name}}Error > {
+        match self.repository
+            .create(&item)
+            .await {
+              Ok(item) => Ok(item),
+              Err(err) => Err({{type_name}}Error::InternalServerError(err)),
+            }
     }
 
-    async fn update(&self, mut item: Update{{type_name}}) -> Result<{{type_name}}, CommonError> {
-        self.repository
-            .update(&mut item)
-            .await
-            .map_err(|e| {{type_name}}Error::InternalServerError(e.message.to_string()).into())
+    async fn update(&self, item: Update{{type_name}}) -> Result<{{type_name}}, {{type_name}}Error > {
+        match self.repository
+            .update(&item)
+            .await {
+              Ok(item) => Ok(item),
+              Err(err) => Err({{type_name}}Error::InternalServerError(err)),
+            }
     }
 
-    async fn list(&self, params: {{type_name}}QueryParams) -> Result<ResultPaging<{{type_name}}>, CommonError> {
-        self.repository
+    async fn list(&self, params: {{type_name}}QueryParams) -> Result<ResultPaging<{{type_name}}>, {{type_name}}Error > {
+        match self.repository
             .list(params)
-            .await
-            .map_err(|e| {{type_name}}Error::InternalServerError(e.message.to_string()).into())
+            .await {
+              Ok(item) => Ok(item),
+              Err(err) => Err({{type_name}}Error::InternalServerError(err)),
+            }
     }
 
-    async fn get(&self, item_id: Uuid) -> Result<{{type_name}}, CommonError> {
-        self.repository
+    async fn get(&self, item_id: Uuid) -> Result<{{type_name}}, {{type_name}}Error > {
+        match self.repository
             .get(item_id)
-            .await
-            .map_err(|e| {{type_name}}Error::InternalServerError(e.message.to_string()).into())
+            .await {
+              Ok(Some(item)) => Ok(item),
+              Ok(None) => Err({{type_name}}Error::{{type_name}}DoesNotExist),
+              Err(err) => Err({{type_name}}Error::InternalServerError(err)),
+            }
     }
 
-    async fn delete(&self, item_id: Uuid) -> Result<(), CommonError> {
-        self.repository
+    async fn delete(&self, item_id: Uuid) -> Result<(), {{type_name}}Error > {
+        match self.repository
             .delete(item_id)
-            .await
-            .map_err(|e| {{type_name}}Error::InternalServerError(e.message.to_string()).into())
+            .await {
+              Ok(item) => Ok(item),
+              Err(err) => Err({{type_name}}Error::InternalServerError(err)),
+            }
     }
 }

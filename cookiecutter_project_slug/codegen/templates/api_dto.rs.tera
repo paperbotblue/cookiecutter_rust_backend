@@ -1,5 +1,3 @@
-use crate::domain::models::{{type_snake}}::{Create{{type_name}}, Update{{type_name}}, {{type_name}}};
-use crate::domain::repositories::repository::ResultPaging;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
@@ -46,8 +44,9 @@ impl<'de> Deserialize<'de> for Create{{type_name}}DTO {
         validate_{{type_snake}}_fields::<D>()?;
 
         Ok(Create{{type_name}}DTO {
-            name: raw.name,
-            description: raw.description,
+            {%- for item in create_type_fields  %}
+            {{ item.field }}: raw.{{ item.field}},
+            {%- endfor %}
         })
     }
 }
@@ -67,8 +66,9 @@ impl<'de> Deserialize<'de> for Update{{type_name}}DTO {
 
         Ok(Update{{type_name}}DTO {
             id,
-            name: raw.name,
-            description: raw.description,
+            {%- for item in create_type_fields %}
+            {{ item.field }}: raw.{{ item.field}},
+            {%- endfor %}
         })
     }
 }

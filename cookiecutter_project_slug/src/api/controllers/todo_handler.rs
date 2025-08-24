@@ -1,8 +1,9 @@
+use std::str::FromStr;
+
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
 
 use crate::api::dto::todo::{CreateTodoDTO, TodoDTO, UpdateTodoDTO};
-use crate::api::dto::wapper_uuid::UuidParam;
 use crate::domain::error::ApiError;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::todo::TodoQueryParams;
@@ -34,16 +35,16 @@ pub async fn list_todos_handler(
 
 pub async fn get_todo_handler(
     todo_service: web::Data<dyn TodoService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<web::Json<TodoDTO>, ApiError> {
-    let todo = todo_service.get(params.0).await?;
+    let todo = todo_service.get(Uuid::from_str(&params)?).await?;
     Ok(web::Json(todo.into()))
 }
 
 pub async fn delete_todo_handler(
     todo_service: web::Data<dyn TodoService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<HttpResponse, ApiError> {
-    todo_service.delete(params.0).await?;
+    todo_service.delete(Uuid::from_str(&params)?).await?;
     Ok(HttpResponse::NoContent().finish())
 }

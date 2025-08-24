@@ -1,4 +1,5 @@
-use crate::domain::error::CommonError;
+use crate::domain::error::{ApiError, RepositoryError};
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -9,6 +10,7 @@ pub enum TokenError {
     RefreshTokenAlreadyExist,
     RefreshTokenDoesNotExists,
     TokenExpired,
+    InternalServerError(RepositoryError),
 }
 
 // Implement `Display`
@@ -25,19 +27,31 @@ impl fmt::Display for TokenError {
             TokenError::TokenExpired => {
                 write!(f, "Token Expired")
             }
+
+            TokenError::InternalServerError(error) => {
+                write!(
+                    f,
+                    "Internal Server Error(MiddlewareError): {}",
+                    error.message
+                )
+            }
         }
     }
 }
 
-impl From<TokenError> for CommonError {
+impl From<TokenError> for ApiError {
     fn from(value: TokenError) -> Self {
         let code = match value {
             TokenError::RefreshTokenDoesNotExists => ApiResponseCode::NotFound,
             TokenError::RefreshTokenAlreadyExist => ApiResponseCode::Conflict,
             TokenError::TokenExpired => ApiResponseCode::Unauthorized,
+            TokenError::InternalServerError(ref e) => {
+                save_error(&e.message);
+                ApiResponseCode::InternalServerError
+            }
         };
 
-        CommonError {
+        Self {
             message: value.to_string(),
             code: code.status_code(),
         }

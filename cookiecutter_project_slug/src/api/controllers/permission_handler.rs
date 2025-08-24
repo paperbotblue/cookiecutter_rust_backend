@@ -1,8 +1,7 @@
 use std::str::FromStr;
 
 use crate::api::dto::permission::{CreatePermissionDTO, PermissionDTO, UpdatePermissionDTO};
-use crate::api::dto::wapper_uuid::UuidParam;
-use crate::domain::error::{ApiError, CommonError};
+use crate::domain::error::ApiError;
 use crate::domain::repositories::permission::PermissionQueryParams;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::services::permission::PermissionService;
@@ -39,16 +38,16 @@ pub async fn list_permissions_handler(
 
 pub async fn get_permission_handler(
     permission_service: web::Data<dyn PermissionService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<web::Json<PermissionDTO>, ApiError> {
-    let permission = permission_service.get(params.0).await?;
+    let permission = permission_service.get(Uuid::from_str(&params)?).await?;
     Ok(web::Json(permission.into()))
 }
 
 pub async fn delete_permission_handler(
     permission_service: web::Data<dyn PermissionService>,
-    params: UuidParam,
+    params: String,
 ) -> Result<HttpResponse, ApiError> {
-    permission_service.delete(params.0).await?;
+    permission_service.delete(Uuid::from_str(&params)?).await?;
     Ok(HttpResponse::NoContent().finish())
 }

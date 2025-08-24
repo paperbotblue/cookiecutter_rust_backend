@@ -518,6 +518,7 @@ dependencies = [
  "dotenv",
  "env_logger",
  "futures-util",
+ "hmac",
  "jsonwebtoken",
  "lazy_static",
  "log",

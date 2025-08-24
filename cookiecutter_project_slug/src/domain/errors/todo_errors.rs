@@ -1,6 +1,6 @@
 use super::response_code::ApiResponseCode;
-use crate::domain::error::CommonError;
-use crate::utils::append_to_file::append_to_file;
+use crate::domain::error::ApiError;
+use crate::utils::append_to_file::save_error;
 use std::error::Error;
 use std::fmt;
 
@@ -35,19 +35,19 @@ impl fmt::Display for TodoError {
     }
 }
 
-impl From<TodoError> for CommonError {
+impl From<TodoError> for ApiError {
     fn from(value: TodoError) -> Self {
         let code = match value {
             TodoError::TodoNotAuthorised => ApiResponseCode::Forbidden,
             TodoError::TodoDoesNotExist => ApiResponseCode::NotFound,
             TodoError::TodoAlreadyExists => ApiResponseCode::Conflict,
             TodoError::InternalServerError(ref e) => {
-                append_to_file("../../../error_logs.txt", e);
+                save_error(e);
                 ApiResponseCode::InternalServerError
             }
         };
 
-        CommonError {
+        Self {
             message: value.to_string(),
             code: code.status_code(),
         }

@@ -70,17 +70,18 @@ impl {{type_name}}Repository for {{type_name}}DieselRepository {
         })
     }
 
-    async fn get(&self, item_id: Uuid) -> RepositoryResult<{{type_name}}> {
+    async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<{{type_name}}>> {
         use crate::infrastructure::schema::{{table_name}}::dsl::{id, {{table_name}}};
         let mut conn = self.pool.get().unwrap();
         run(move || {
             {{table_name}}
                 .filter(id.eq(item_id))
                 .first::<{{type_name}}Diesel>(&mut conn)
+                .optional()
         })
         .await
         .map_err(|e| DieselRepositoryError::from(e).into_inner())
-        .map(|v| v.into())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
     }
 
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {

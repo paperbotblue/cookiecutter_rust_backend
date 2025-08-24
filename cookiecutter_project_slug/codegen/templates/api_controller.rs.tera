@@ -34,17 +34,17 @@ pub async fn list_{{type_snake}}s_handler(
 
 pub async fn get_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: UuidParam,
+    params: Uuid,
 ) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
-    let {{type_snake}} = {{type_snake}}_service.get(params.0).await?;
+    let {{type_snake}} = {{type_snake}}_service.get(Uuid::from_str(&params)?).await?;
     Ok(web::Json({{type_snake}}.into()))
 }
 
 pub async fn delete_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: UuidParam,
+    params: Uuid,
 ) -> Result<HttpResponse, ApiError> {
-    {{type_snake}}_service.delete(params.0).await?;
+    {{type_snake}}_service.delete(Uuid::from_str(&params)?).await?;
     Ok(HttpResponse::NoContent().finish())
 }
 
