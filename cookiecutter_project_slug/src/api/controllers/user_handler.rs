@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use actix_web::cookie::time::Duration;
+use actix_web::cookie::{Cookie, SameSite};
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
 
@@ -7,14 +9,36 @@ use crate::api::dto::user::{CreateUserDTO, UpdateUserDTO, UserDTO};
 use crate::domain::error::ApiError;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::user::UserQueryParams;
+use crate::domain::services::refresh_token::RefreshTokenService;
 use crate::domain::services::user::UserService;
 
 pub async fn create_user_handler(
     user_service: web::Data<dyn UserService>,
+    refresh_token_service: web::Data<dyn RefreshTokenService>,
     post_data: web::Json<CreateUserDTO>,
-) -> Result<web::Json<UserDTO>, ApiError> {
+) -> Result<HttpResponse, ApiError> {
     let user = user_service.create(post_data.into_inner().into()).await?;
-    Ok(web::Json(user.into()))
+
+    let raw_token = Uuid::new_v4();
+    refresh_token_service
+        .create_new_user_refresh_token(user.id, raw_token)
+        .await?;
+    let jwt_token = refresh_token_service
+        .create_user_jwt_token(user.id, "User".to_string())
+        .await?;
+
+    let cookie = Cookie::build("refresh_token", raw_token.to_string())
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Strict)
+        .path("/")
+        .max_age(Duration::days(7))
+        .finish();
+
+    let res = HttpResponse::Ok().cookie(cookie).json(serde_json::json!({
+        "access_token": jwt_token
+    }));
+    Ok(res)
 }
 
 pub async fn update_user_handler(

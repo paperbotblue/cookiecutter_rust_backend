@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use serde::Serialize;
 use uuid::Uuid;
 
 pub struct RefreshToken {
@@ -30,4 +31,12 @@ pub struct UpdateRefreshToken {
     pub issued_at: DateTime<Utc>,
     pub expires_at: DateTime<Utc>,
     pub is_revoked: bool,
+}
+
+#[derive(Serialize)]
+pub struct JwtClaims {
+    pub sub: String,
+    pub role: String,
+    pub exp: usize,
+    pub iat: usize,
 }

@@ -21,6 +21,10 @@ log = "0.4"
 serde_json = "1.0"
 futures-util = "0.3.26"
 
+sha2 = "0.10"
+hex = "0.4"
+rand = "0.8"
+
 chrono = { version = "0.4.41", features = ["serde"] }
 chrono-tz = "0.10.3"
 

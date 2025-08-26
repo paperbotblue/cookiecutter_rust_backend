@@ -8,6 +8,7 @@ use std::fmt;
 pub enum UserError {
     UserAlreadyExistsEmail,
     UserAlreadyExistsPhoneNumber,
+    UserAlreadyExistsUsername,
     UserDoesNotExist,
     UserNotAuthorised,
     InternalServerError(RepositoryError),
@@ -32,6 +33,13 @@ impl fmt::Display for UserError {
                 )
             }
 
+            UserError::UserAlreadyExistsUsername => {
+                write!(
+                    f,
+                    "User Creation Error: Already Exists With This Phone Number"
+                )
+            }
+
             UserError::UserNotAuthorised => {
                 write!(f, "User Not Authorised")
             }
@@ -50,6 +58,7 @@ impl From<UserError> for ApiError {
             UserError::UserDoesNotExist => ApiResponseCode::NotFound,
             UserError::UserAlreadyExistsEmail => ApiResponseCode::Conflict,
             UserError::UserAlreadyExistsPhoneNumber => ApiResponseCode::Conflict,
+            UserError::UserAlreadyExistsUsername => ApiResponseCode::Conflict,
             UserError::InternalServerError(ref e) => {
                 save_error(&e.message);
                 ApiResponseCode::InternalServerError

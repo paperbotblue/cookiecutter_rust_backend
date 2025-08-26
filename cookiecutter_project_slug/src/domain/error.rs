@@ -55,11 +55,10 @@ impl From<UuidError> for ApiError {
     }
 }
 
-impl From<jsonwebtoken::errors::Error> for ApiError {
+impl From<jsonwebtoken::errors::Error> for RepositoryError {
     fn from(value: jsonwebtoken::errors::Error) -> Self {
         Self {
             message: value.to_string(),
-            code: 500,
         }
     }
 }
