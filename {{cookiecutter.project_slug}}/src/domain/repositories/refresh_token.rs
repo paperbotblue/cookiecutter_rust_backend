@@ -1,4 +1,4 @@
-use crate::domain::models::refresh_token::{CreateRefreshToken, UpdateRefreshToken, RefreshToken};
+use crate::domain::models::refresh_token::{CreateRefreshToken, RefreshToken, UpdateRefreshToken};
 use crate::domain::repositories::repository::{
     QueryParams, RepositoryResult, ResultPaging, DEFAULT_LIMIT, DEFAULT_OFFSET,
 };
@@ -24,10 +24,21 @@ impl QueryParams for RefreshTokenQueryParams {
 
 #[async_trait]
 pub trait RefreshTokenRepository: Send + Sync {
-    async fn create(&self, new_refresh_token: &CreateRefreshToken) -> RepositoryResult<RefreshToken>;
-    async fn update(&self, update_refresh_token: &UpdateRefreshToken) -> RepositoryResult<RefreshToken>;
-    async fn list(&self, params: RefreshTokenQueryParams) -> RepositoryResult<ResultPaging<RefreshToken>>;
+    async fn create(
+        &self,
+        new_refresh_token: &CreateRefreshToken,
+    ) -> RepositoryResult<RefreshToken>;
+    async fn update(
+        &self,
+        update_refresh_token: &UpdateRefreshToken,
+    ) -> RepositoryResult<RefreshToken>;
+    async fn revoke_family_id(&self, id_val: Uuid) -> RepositoryResult<()>;
+    async fn revoke_token(&self, id_val: Uuid) -> RepositoryResult<()>;
+    async fn list(
+        &self,
+        params: RefreshTokenQueryParams,
+    ) -> RepositoryResult<ResultPaging<RefreshToken>>;
     async fn get(&self, refresh_token_id: Uuid) -> RepositoryResult<Option<RefreshToken>>;
+    async fn get_from_hash(&self, item_id: String) -> RepositoryResult<Option<RefreshToken>>;
     async fn delete(&self, refresh_token_id: Uuid) -> RepositoryResult<()>;
 }
-

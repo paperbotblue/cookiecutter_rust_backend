@@ -10,7 +10,9 @@ use crate::domain::repositories::refresh_token::RefreshTokenRepository;
 use crate::domain::repositories::repository::{QueryParams, RepositoryResult, ResultPaging};
 use crate::infrastructure::databases::postgresql::DBConn;
 use crate::infrastructure::error::DieselRepositoryError;
-use crate::infrastructure::models::refresh_token::{CreateRefreshTokenDiesel, RefreshTokenDiesel, UpdateRefreshTokenDiesel};
+use crate::infrastructure::models::refresh_token::{
+    CreateRefreshTokenDiesel, RefreshTokenDiesel, UpdateRefreshTokenDiesel,
+};
 
 pub struct RefreshTokenDieselRepository {
     pub pool: Arc<DBConn>,
@@ -53,7 +55,44 @@ impl RefreshTokenRepository for RefreshTokenDieselRepository {
         Ok(result.into())
     }
 
-    async fn list(&self, params: RefreshTokenQueryParams) -> RepositoryResult<ResultPaging<RefreshToken>> {
+    async fn revoke_family_id(&self, id_val: Uuid) -> RepositoryResult<()> {
+        use crate::infrastructure::schema::refresh_tokens::dsl::{
+            family_id, is_revoked, refresh_tokens,
+        };
+
+        let mut conn = self.pool.get().unwrap();
+
+        run(move || {
+            diesel::update(refresh_tokens.filter(family_id.eq(id_val)))
+                .set(is_revoked.eq(true))
+                .execute(&mut conn) // <- use execute for multiple rows
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
+
+        Ok(())
+    }
+
+    async fn revoke_token(&self, id_val: Uuid) -> RepositoryResult<()> {
+        use crate::infrastructure::schema::refresh_tokens::dsl::{id, is_revoked, refresh_tokens};
+
+        let mut conn = self.pool.get().unwrap();
+
+        run(move || {
+            diesel::update(refresh_tokens.filter(id.eq(id_val)))
+                .set(is_revoked.eq(true))
+                .execute(&mut conn) // <- use execute for multiple rows
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
+
+        Ok(())
+    }
+
+    async fn list(
+        &self,
+        params: RefreshTokenQueryParams,
+    ) -> RepositoryResult<ResultPaging<RefreshToken>> {
         use crate::infrastructure::schema::refresh_tokens::dsl::refresh_tokens;
         let pool = self.pool.clone();
         let builder = refresh_tokens.limit(params.limit()).offset(params.offset());
@@ -84,6 +123,20 @@ impl RefreshTokenRepository for RefreshTokenDieselRepository {
         .map(|opt| opt.map(|v| v.into())) // map over Option
     }
 
+    async fn get_from_hash(&self, item_id: String) -> RepositoryResult<Option<RefreshToken>> {
+        use crate::infrastructure::schema::refresh_tokens::dsl::{refresh_tokens, token};
+        let mut conn = self.pool.get().unwrap();
+        run(move || {
+            refresh_tokens
+                .filter(token.eq(item_id))
+                .first::<RefreshTokenDiesel>(&mut conn)
+                .optional()
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
+    }
+
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {
         use crate::infrastructure::schema::refresh_tokens::dsl::{id, refresh_tokens};
         let mut conn = self.pool.get().unwrap();
@@ -93,4 +146,3 @@ impl RefreshTokenRepository for RefreshTokenDieselRepository {
         Ok(())
     }
 }
-

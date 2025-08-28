@@ -1,8 +1,13 @@
+use actix_web::cookie::Cookie;
+use actix_web::dev::ServiceRequest;
+use actix_web::HttpRequest;
 use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::domain::errors::refresh_token_errors::RefreshTokenError;
-use crate::domain::models::refresh_token::{CreateRefreshToken, RefreshToken, UpdateRefreshToken};
+use crate::domain::models::refresh_token::{
+    CreateRefreshToken, JwtClaims, RefreshToken, UpdateRefreshToken,
+};
 use crate::domain::repositories::refresh_token::RefreshTokenQueryParams;
 use crate::domain::repositories::repository::ResultPaging;
 
@@ -18,6 +23,13 @@ pub trait RefreshTokenService: 'static + Sync + Send {
         user_id: Uuid,
         role: String,
     ) -> Result<String, RefreshTokenError>;
+
+    fn build_refresh_token_cookie(&self, raw_token: String) -> Result<Cookie, RefreshTokenError>;
+    async fn renew_refresh_token(
+        &self,
+        raw_token: String,
+        user_id: Uuid,
+    ) -> Result<String, RefreshTokenError>;
     async fn create(
         &self,
         refresh_token: CreateRefreshToken,
@@ -31,6 +43,14 @@ pub trait RefreshTokenService: 'static + Sync + Send {
         params: RefreshTokenQueryParams,
     ) -> Result<ResultPaging<RefreshToken>, RefreshTokenError>;
     async fn get(&self, refresh_token_id: Uuid) -> Result<RefreshToken, RefreshTokenError>;
+    async fn get_refresh_token_from_raw_token(
+        &self,
+        item_id: String,
+    ) -> Result<RefreshToken, RefreshTokenError>;
     async fn delete(&self, refresh_token_id: Uuid) -> Result<(), RefreshTokenError>;
+    fn create_raw_token(&self) -> Uuid;
     fn hash_token(&self, token: &str) -> String;
+    fn verify_jwt(&self, token: &str) -> Result<JwtClaims, RefreshTokenError>;
+    fn extract_refresh_token(&self, req: &HttpRequest) -> Result<String, RefreshTokenError>;
+    fn extract_token(&self, req: &ServiceRequest) -> Result<String, RefreshTokenError>;
 }

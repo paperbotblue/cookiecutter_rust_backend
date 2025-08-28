@@ -1,7 +1,5 @@
 use std::str::FromStr;
 
-use actix_web::cookie::time::Duration;
-use actix_web::cookie::{Cookie, SameSite};
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
 
@@ -27,13 +25,7 @@ pub async fn create_user_handler(
         .create_user_jwt_token(user.id, "User".to_string())
         .await?;
 
-    let cookie = Cookie::build("refresh_token", raw_token.to_string())
-        .http_only(true)
-        .secure(true)
-        .same_site(SameSite::Strict)
-        .path("/")
-        .max_age(Duration::days(7))
-        .finish();
+    let cookie = refresh_token_service.build_refresh_token_cookie(raw_token.to_string())?;
 
     let res = HttpResponse::Ok().cookie(cookie).json(serde_json::json!({
         "access_token": jwt_token
