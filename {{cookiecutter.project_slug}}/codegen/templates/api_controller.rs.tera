@@ -1,48 +1,48 @@
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
+use std::str::FromStr;
 
-use crate::api::dto::wapper_uuid::UuidParam;
 use crate::api::dto::{{type_snake}}::{Create{{type_name}}DTO, {{type_name}}DTO, Update{{type_name}}DTO};
-use crate::domain::error::ApiError;
+use base::error::{ApiError, ApiResponse};
+use base::result_paging::ResultPaging;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
-use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::services::{{type_snake}}::{{type_name}}Service;
 
 pub async fn create_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
     post_data: web::Json<Create{{type_name}}DTO>,
-) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
+) -> Result<ApiResponse<{{type_name}}DTO>, ApiError> {
     let {{type_snake}} = {{type_snake}}_service.create(post_data.into_inner().into()).await?;
-    Ok(web::Json({{type_snake}}.into()))
+    Ok(ApiResponse({{type_snake}}.into()))
 }
 
 pub async fn update_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
     post_data: web::Json<Update{{type_name}}DTO>,
-) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
+) -> Result<ApiResponse<{{type_name}}DTO>, ApiError> {
     let {{type_snake}} = {{type_snake}}_service.update(post_data.into_inner().into()).await?;
-    Ok(web::Json({{type_snake}}.into()))
+    Ok(ApiResponse({{type_snake}}.into()))
 }
 
 pub async fn list_{{type_snake}}s_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
     params: web::Query<{{type_name}}QueryParams>,
-) -> Result<web::Json<ResultPaging<{{type_name}}DTO>>, ApiError> {
+) -> Result<ApiResponse<ResultPaging<{{type_name}}DTO>>, ApiError> {
     let selection = {{type_snake}}_service.list(params.into_inner()).await?;
-    Ok(web::Json(selection.into()))
+    Ok(ApiResponse(selection.map(|item| item.into())))
 }
 
 pub async fn get_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: Uuid,
-) -> Result<web::Json<{{type_name}}DTO>, ApiError> {
+    params: web::Path<String>,
+) -> Result<ApiResponse<{{type_name}}DTO>, ApiError> {
     let {{type_snake}} = {{type_snake}}_service.get(Uuid::from_str(&params)?).await?;
-    Ok(web::Json({{type_snake}}.into()))
+    Ok(ApiResponse({{type_snake}}.into()))
 }
 
 pub async fn delete_{{type_snake}}_handler(
     {{type_snake}}_service: web::Data<dyn {{type_name}}Service>,
-    params: Uuid,
+    params: web::Path<String>,
 ) -> Result<HttpResponse, ApiError> {
     {{type_snake}}_service.delete(Uuid::from_str(&params)?).await?;
     Ok(HttpResponse::NoContent().finish())

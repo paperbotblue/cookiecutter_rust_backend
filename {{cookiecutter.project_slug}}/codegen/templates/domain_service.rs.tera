@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::errors::{{type_snake}}_errors::{{type_name}}Error;
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, {{type_name}}, Update{{type_name}}};
-use crate::domain::repositories::repository::ResultPaging;
+use base::result_paging::ResultPaging;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
 
 #[async_trait]

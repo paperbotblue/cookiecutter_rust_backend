@@ -1,0 +1,3 @@
+[build]
+jobs = 12   # Automatically uses all available logical CPUs
+

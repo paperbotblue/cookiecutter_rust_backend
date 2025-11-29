@@ -1,18 +1,15 @@
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use serde::de::Error as DeError;
 
-use super::validators::{{type_snake}}::validate_{{type_snake}}_fields;
-
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Create{{type_name}}DTO {
     {%- for item in create_type_fields %}
     pub {{ item.field }}: {{ item.typ }},
     {%- endfor %}
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Update{{type_name}}DTO {
     pub id: Uuid,
     {%- for item in create_type_fields %}
@@ -26,51 +23,4 @@ pub struct {{type_name}}DTO {
     pub {{ item.field }}: {{ item.typ }},
     {%- endfor %}
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Raw{{type_name}}DTO {
-    {%- for item in type_fields %}
-    pub {{ item.field }}: {{ item.typ }},
-    {%- endfor %}
-}
-
-impl<'de> Deserialize<'de> for Create{{type_name}}DTO {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let raw = Raw{{type_name}}DTO::deserialize(deserializer)?;
-
-        validate_{{type_snake}}_fields::<D>()?;
-
-        Ok(Create{{type_name}}DTO {
-            {%- for item in create_type_fields  %}
-            {{ item.field }}: raw.{{ item.field}},
-            {%- endfor %}
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for Update{{type_name}}DTO {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let raw = Raw{{type_name}}DTO::deserialize(deserializer)?;
-
-        let id = raw
-            .id
-            .ok_or_else(|| D::Error::custom("ID is required for update"))?;
-
-        validate_{{type_snake}}_fields::<D>()?;
-
-        Ok(Update{{type_name}}DTO {
-            id,
-            {%- for item in create_type_fields %}
-            {{ item.field }}: raw.{{ item.field}},
-            {%- endfor %}
-        })
-    }
-}
-
 

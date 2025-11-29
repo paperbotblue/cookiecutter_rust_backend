@@ -1,4 +1,8 @@
 target/
 codegen/target/
 .env
-.bacon-locations
+
+
+# Added by cargo
+
+/target

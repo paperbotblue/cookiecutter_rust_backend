@@ -1,0 +1,12 @@
+error /home/guild/servers/digischool/codegen/src/main.rs:160:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:167:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:174:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:181:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:188:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:195:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:202:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:209:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:216:34 cannot find value `module` in this scope
+error /home/guild/servers/digischool/codegen/src/main.rs:223:34 cannot find value `module` in this scope
+warning /home/guild/servers/digischool/codegen/src/main.rs:2:5 unused import: `std::collections::HashMap`
+warning /home/guild/servers/digischool/codegen/src/main.rs:5:23 unused import: `PathBuf`

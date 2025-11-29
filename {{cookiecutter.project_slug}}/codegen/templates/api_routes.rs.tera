@@ -1,4 +1,4 @@
-use crate::api::controllers::{{type_snake}}_handler::{
+use auth::api::controllers::{{type_snake}}_handler::{
     create_{{type_snake}}_handler,
     update_{{type_snake}}_handler,
     delete_{{type_snake}}_handler,
@@ -10,6 +10,8 @@ use actix_web::{
     middleware::from_fn,
     web::{self, ServiceConfig},
 };
+
+use auth::api::middlewares::jwt_extractor::check_permission_middleware;
 
 pub fn {{type_snake}}_config(cfg: &mut ServiceConfig) {
     cfg.service(
@@ -29,5 +31,14 @@ pub fn {{type_snake}}_config(cfg: &mut ServiceConfig) {
                     .route(web::get().to(get_{{type_snake}}_handler))
                     .route(web::delete().to(delete_{{type_snake}}_handler)),
             ),
+    )
+    .service(
+        web::scope("/auth/{{type_snake}}s")
+            .wrap(from_fn(|req, next| async move {
+                check_permission_middleware(req, next, "admin").await
+             }))
+
+             // .service(web::resource("/update").route(web::post().to(update_{{type_snake}}_handler)))
+
     );
 }

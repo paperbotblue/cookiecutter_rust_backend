@@ -1,96 +1,133 @@
-use actix_threadpool::run;
-use async_trait::async_trait;
-use diesel::prelude::*;
-use std::sync::Arc;
 use uuid::Uuid;
-
+use sqlx::{query, query_as, PgPool};
+use async_trait::async_trait;
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, {{type_name}}, Update{{type_name}}};
 use crate::domain::repositories::{{type_snake}}::{{type_name}}QueryParams;
 use crate::domain::repositories::{{type_snake}}::{{type_name}}Repository;
-use crate::domain::repositories::repository::{QueryParams, RepositoryResult, ResultPaging};
-use crate::infrastructure::databases::postgresql::DBConn;
-use crate::infrastructure::error::DieselRepositoryError;
-use crate::infrastructure::models::{{type_snake}}::{Create{{type_name}}Diesel, {{type_name}}Diesel, Update{{type_name}}Diesel};
+use base::result_paging::{
+    QueryParams, RepositoryResult, ResultPaging
+};
 
 pub struct {{type_name}}DieselRepository {
-    pub pool: Arc<DBConn>,
+    pub pool: PgPool,
 }
 
 impl {{type_name}}DieselRepository {
-    pub fn new(db: Arc<DBConn>) -> Self {
+    pub fn new(db: PgPool) -> Self {
         {{type_name}}DieselRepository { pool: db }
     }
 }
 
 #[async_trait]
 impl {{type_name}}Repository for {{type_name}}DieselRepository {
-    async fn create(&self, new_item: &Create{{type_name}}) -> RepositoryResult<{{type_name}}> {
-        use crate::infrastructure::schema::{{table_name}}::dsl::{{table_name}};
-        let new_item_diesel: Create{{type_name}}Diesel = new_item.into();
-        let mut conn = self.pool.get().unwrap();
-        let result: {{type_name}}Diesel = run(move || {
-            diesel::insert_into({{table_name}})
-                .values(new_item_diesel)
-                .get_result(&mut conn)
-        })
-        .await
-        .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
-        Ok(result.into())
-    }
+async fn create(&self, new_item: &Create{{ type_name }}) -> RepositoryResult<{{ type_name }}> {
+    Ok(
+        query_as!(
+            {{ type_name }},
+            r#"
+                INSERT INTO {{ type_snake }}s
+                (
+                    id,
+                    {%- for item in create_type_fields %}
+                    {{ item.field }},
+                    {%- endfor %}
+                )
+                VALUES
+                (
+                    $1,
+                    {%- for item in create_type_fields %}
+                    ${{ loop.index + 1 }},
+                    {%- endfor %}
+                )
+                RETURNING *
+            "#,
+            Uuid::new_v4(),
+            {%- for item in create_type_fields %}
+            new_item.{{ item.field }},
+            {%- endfor %}
+        )
+        .fetch_one(&self.pool)
+        .await?
+    )
+}
 
-    async fn update(&self, new_item: &Update{{type_name}}) -> RepositoryResult<{{type_name}}> {
-        use crate::infrastructure::schema::{{table_name}}::dsl::{id as target_id, {{table_name}}};
-        let new_item_diesel: Update{{type_name}}Diesel = new_item.into();
-        let id_val: Uuid = new_item.id;
-        let mut conn = self.pool.get().unwrap();
-        let result: {{type_name}}Diesel = run(move || {
-            diesel::update({{table_name}}.filter(target_id.eq(id_val)))
-                .set(new_item_diesel)
-                .get_result(&mut conn)
-        })
-        .await
-        .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
-        Ok(result.into())
-    }
+
+async fn update(&self, new_item: &Update{{ type_name }}) -> RepositoryResult<{{ type_name }}> {
+    Ok(
+        query_as!(
+            {{ type_name }},
+            r#"
+                UPDATE {{ type_snake }}s
+                SET
+                    {%- for item in create_type_fields %}
+                    {{ item.field }} = ${{ loop.index + 1 }},
+                    {%- endfor %}
+                WHERE
+                    id = $1
+                RETURNING *
+            "#,
+            new_item.id,
+            {%- for item in create_type_fields %}
+            new_item.{{ item.field }},
+            {%- endfor %}
+        )
+        .fetch_one(&self.pool)
+        .await?
+    )
+}
 
     async fn list(&self, params: {{type_name}}QueryParams) -> RepositoryResult<ResultPaging<{{type_name}}>> {
-        use crate::infrastructure::schema::{{table_name}}::dsl::{{table_name}};
-        let pool = self.pool.clone();
-        let builder = {{table_name}}.limit(params.limit()).offset(params.offset());
-        let result = run(move || {
-            let mut conn = pool.get().unwrap();
-            builder.load::<{{type_name}}Diesel>(&mut conn)
-        })
-        .await
-        .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
+        let result = query_as!(
+            {{ type_name }},
+            r#"
+                SELECT * FROM {{ type_snake }}s LIMIT $1 OFFSET $2
+            "#,
+            params.limit(),
+            params.offset()
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        let total = query!(
+            r#"
+            SELECT COUNT(*) as "count!"
+            FROM {{ type_snake }}s
+        "#
+        )
+        .fetch_one(&self.pool)
+        .await?
+        .count;
 
         Ok(ResultPaging {
-            total: 0,
-            items: result.into_iter().map(|v| v.into()).collect(),
+            total,
+            items: result,
         })
     }
 
     async fn get(&self, item_id: Uuid) -> RepositoryResult<Option<{{type_name}}>> {
-        use crate::infrastructure::schema::{{table_name}}::dsl::{id, {{table_name}}};
-        let mut conn = self.pool.get().unwrap();
-        run(move || {
-            {{table_name}}
-                .filter(id.eq(item_id))
-                .first::<{{type_name}}Diesel>(&mut conn)
-                .optional()
-        })
-        .await
-        .map_err(|e| DieselRepositoryError::from(e).into_inner())
-        .map(|opt| opt.map(|v| v.into())) // map over Option
+      Ok(
+        query_as!(
+          {{ type_name }},
+          r#"
+              SELECT * FROM {{ type_snake }}s
+              WHERE
+              id = $1
+          "#,
+          item_id
+        ).fetch_optional(&self.pool).await?
+        )
     }
 
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {
-        use crate::infrastructure::schema::{{table_name}}::dsl::{id, {{table_name}}};
-        let mut conn = self.pool.get().unwrap();
-        run(move || diesel::delete({{table_name}}.filter(id.eq(item_id))).execute(&mut conn))
-            .await
-            .map_err(|e| DieselRepositoryError::from(e).into_inner())?;
-        Ok(())
+        query!(
+          r#"
+              DELETE FROM {{ type_snake }}s
+              WHERE
+              id = $1
+          "#,
+          item_id
+        ).execute(&self.pool).await?;
+      Ok(())
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::domain::models::{{type_snake}}::{Create{{type_name}}, Update{{type_name}}, {{type_name}}};
-use crate::domain::repositories::repository::{
+use base::result_paging::{
     QueryParams, RepositoryResult, ResultPaging, DEFAULT_LIMIT, DEFAULT_OFFSET,
 };
 use async_trait::async_trait;
